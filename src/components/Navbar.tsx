@@ -1,56 +1,80 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence as AnimatePresenceComponent } from 'framer-motion';
+import {
+  Bars3Icon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline';
 
-const navigation = [
-  { name: 'Главная', href: '/' },
-  { name: 'О нас', href: '/about' },
-  { name: 'Анонсы', href: '/events' },
-  { name: 'Маршруты', href: '/routes' },
-  { name: 'Команда', href: '/team' },
-  { name: 'Контакты', href: '/contact' },
+// Импортируем логотип
+import logo from '../assets/images/logo.svg';
+
+const navigationItems = [
+  { name: 'Главная', path: '/' },
+  { name: 'О нас', path: '/about' },
+  { name: 'Команда', path: '/team' },
+  { name: 'События', path: '/events' },
+  { name: 'Контакты', path: '/contact' },
 ];
 
-const Navbar: React.FC = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+export default function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
 
   return (
-    <nav className="bg-white shadow-lg fixed w-full z-50">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex-shrink-0">
-            <Link to="/" className="flex items-center">
-              <span className="text-2xl font-bold text-primary-600">Bike Unity</span>
-            </Link>
-          </div>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-20">
+          {/* Logo */}
+          <Link to="/" className="flex-shrink-0">
+            <motion.img
+              src={logo}
+              alt="Bike Unity"
+              className="h-12 w-auto"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            />
+          </Link>
 
-          {/* Desktop menu */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-center space-x-4">
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </div>
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            {navigationItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`relative px-3 py-2 text-sm font-medium transition-colors ${
+                  location.pathname === item.path
+                    ? 'text-blue-800'
+                    : 'text-gray-600 hover:text-blue-800'
+                }`}
+              >
+                {item.name}
+                {location.pathname === item.path && (
+                  <motion.div
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-800"
+                    layoutId="navbar-indicator"
+                  />
+                )}
+              </Link>
+            ))}
           </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden">
             <button
-              type="button"
-              className="text-gray-700 hover:text-primary-600"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              onClick={toggleMenu}
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-blue-800 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-800"
             >
-              {mobileMenuOpen ? (
-                <XMarkIcon className="h-6 w-6" />
+              <span className="sr-only">Открыть меню</span>
+              {isOpen ? (
+                <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
               ) : (
-                <Bars3Icon className="h-6 w-6" />
+                <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
               )}
             </button>
           </div>
@@ -58,20 +82,25 @@ const Navbar: React.FC = () => {
       </div>
 
       {/* Mobile menu */}
-      {mobileMenuOpen && (
+      {isOpen && (
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className="md:hidden"
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.2 }}
+          className="md:hidden bg-white border-t"
         >
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
-            {navigation.map((item) => (
+          <div className="px-2 pt-2 pb-3 space-y-1">
+            {navigationItems.map((item) => (
               <Link
-                key={item.name}
-                to={item.href}
-                className="text-gray-700 hover:text-primary-600 block px-3 py-2 rounded-md text-base font-medium"
-                onClick={() => setMobileMenuOpen(false)}
+                key={item.path}
+                to={item.path}
+                onClick={() => setIsOpen(false)}
+                className={`block px-3 py-2 rounded-md text-base font-medium ${
+                  location.pathname === item.path
+                    ? 'bg-blue-50 text-blue-800'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-blue-800'
+                }`}
               >
                 {item.name}
               </Link>
@@ -81,6 +110,4 @@ const Navbar: React.FC = () => {
       )}
     </nav>
   );
-};
-
-export default Navbar; 
+} 
