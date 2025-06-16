@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence as AnimatePresenceComponent } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Bars3Icon,
   XMarkIcon,
