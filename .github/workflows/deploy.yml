@@ -3,39 +3,31 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main
-  workflow_dispatch:
-
-permissions:
-  contents: write
+      - main # Или master, в зависимости от вашей основной ветки
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: '20' # Используйте версию Node.js, которая вам нужна
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      - name: Build
-        run: |
-          npm run build
-        env:
-          NODE_ENV: production
-          CI: false  # Отключаем строгие проверки ESLint в CI
+      - name: Build project
+        run: npm run build
 
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          folder: dist
-          branch: gh-pages
-          clean: true
-          token: ${{ secrets.GITHUB_TOKEN }} 
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist # Каталог, который будет опубликован
+          # Если ваш сайт опубликован в подпапке (например, /bike-unity/),
+          # убедитесь, что в vite.config.ts base: '/bike-unity/' 
