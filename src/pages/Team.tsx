@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline';
 
@@ -54,9 +54,23 @@ const teamMembers: TeamMember[] = [
   },
 ];
 
+// Добавляем компонент спиннера
+const LoadingSpinner: React.FC = () => (
+  <div className="flex justify-center items-center h-screen">
+    <div className="spinner" />
+  </div>
+);
+
 export default function Team() {
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1200);
+    return () => clearTimeout(timer);
+  }, []);
+  if (isLoading) return <LoadingSpinner />;
+
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 fade-in-up">
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0 z-0 bg-gradient-to-b from-blue-900 to-blue-800" />
@@ -66,7 +80,7 @@ export default function Team() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center max-w-3xl mx-auto"
+            className="text-center max-w-3xl mx-auto fade-in-up"
           >
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Наша команда
@@ -90,13 +104,13 @@ export default function Team() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow hover:translate-x-2 fade-in-up"
               >
-                <div className="aspect-w-1 aspect-h-1">
+                <div className="aspect-w-1 aspect-h-1 flex items-center justify-center">
                   <img
                     src={member.image}
                     alt={member.name}
-                    className="w-full h-full object-cover"
+                    className="w-24 h-24 rounded-full object-cover img-bw"
                   />
                 </div>
                 <div className="p-6">
@@ -116,7 +130,7 @@ export default function Team() {
                     {member.email && (
                       <a
                         href={`mailto:${member.email}`}
-                        className="flex items-center text-gray-600 hover:text-blue-800"
+                        className="flex items-center text-gray-600 hover:text-blue-800 transition-colors fade-in-up"
                       >
                         <EnvelopeIcon className="w-5 h-5 mr-2" />
                         {member.email}
@@ -125,7 +139,7 @@ export default function Team() {
                     {member.phone && (
                       <a
                         href={`tel:${member.phone}`}
-                        className="flex items-center text-gray-600 hover:text-blue-800"
+                        className="flex items-center text-gray-600 hover:text-blue-800 transition-colors fade-in-up"
                       >
                         <PhoneIcon className="w-5 h-5 mr-2" />
                         {member.phone}
@@ -147,6 +161,7 @@ export default function Team() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
+            className="fade-in-up"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Хотите присоединиться к команде?
@@ -158,7 +173,7 @@ export default function Team() {
             </p>
             <a
               href="/contact"
-              className="btn-primary text-lg px-8 py-3"
+              className="btn-animated text-lg px-8 py-3"
             >
               Связаться с нами
             </a>

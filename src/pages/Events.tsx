@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
@@ -66,9 +67,23 @@ const difficultyColors = {
   'Продвинутый': 'bg-red-100 text-red-800',
 };
 
+// Добавляем компонент спиннера
+const LoadingSpinner: React.FC = () => (
+  <div className="flex justify-center items-center h-screen">
+    <div className="spinner" />
+  </div>
+);
+
 export default function Events() {
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1200);
+    return () => clearTimeout(timer);
+  }, []);
+  if (isLoading) return <LoadingSpinner />;
+
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 fade-in-up">
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0 z-0 bg-gradient-to-b from-blue-900 to-blue-800" />
@@ -78,7 +93,7 @@ export default function Events() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center max-w-3xl mx-auto"
+            className="text-center max-w-3xl mx-auto fade-in-up"
           >
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
               События и поездки
@@ -101,13 +116,13 @@ export default function Events() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white rounded-xl shadow-lg overflow-hidden"
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow hover:translate-x-2 fade-in-up"
               >
                 <div className="aspect-w-16 aspect-h-9">
                   <img
                     src={event.image}
                     alt={event.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover img-bw"
                   />
                 </div>
                 
@@ -145,7 +160,7 @@ export default function Events() {
 
                   <Link
                     to={`/events/${event.id}`}
-                    className="inline-flex items-center justify-center w-full btn-primary"
+                    className="inline-flex items-center justify-center w-full btn-animated"
                   >
                     Подробнее
                     <ArrowRightIcon className="w-5 h-5 ml-2" />
@@ -161,7 +176,7 @@ export default function Events() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="mt-20 text-center"
+            className="mt-20 text-center fade-in-up"
           >
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
               Хотите организовать свое событие?
@@ -171,7 +186,7 @@ export default function Events() {
             </p>
             <Link
               to="/contact"
-              className="btn-primary text-lg px-8 py-3"
+              className="btn-animated text-lg px-8 py-3"
             >
               Связаться с нами
             </Link>

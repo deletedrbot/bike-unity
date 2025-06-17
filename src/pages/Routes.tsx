@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { MapIcon, ClockIcon, ArrowTrendingUpIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
@@ -69,15 +69,28 @@ const routes: Route[] = [
   },
 ];
 
+// Добавляем компонент спиннера
+const LoadingSpinner: React.FC = () => (
+  <div className="flex justify-center items-center h-screen">
+    <div className="spinner" />
+  </div>
+);
+
 const Routes: React.FC = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1200);
+    return () => clearTimeout(timer);
+  }, []);
+  if (isLoading) return <LoadingSpinner />;
 
   const filteredRoutes = selectedDifficulty
     ? routes.filter(route => route.difficulty === selectedDifficulty)
     : routes;
 
   return (
-    <div className="pt-20">
+    <div className="pt-20 fade-in-up">
       {/* Hero Section */}
       <section className="bg-gray-900 text-white py-20">
         <div className="container mx-auto px-4">
@@ -85,7 +98,7 @@ const Routes: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="max-w-3xl mx-auto text-center"
+            className="max-w-3xl mx-auto text-center fade-in-up"
           >
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Маршруты</h1>
             <p className="text-xl text-gray-300">
@@ -101,11 +114,7 @@ const Routes: React.FC = () => {
           <div className="flex flex-wrap gap-4 justify-center">
             <button
               onClick={() => setSelectedDifficulty(null)}
-              className={`px-4 py-2 rounded-full ${
-                selectedDifficulty === null
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+              className={`px-4 py-2 rounded-full btn-animated ${selectedDifficulty === null ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
               Все
             </button>
@@ -113,11 +122,7 @@ const Routes: React.FC = () => {
               <button
                 key={difficulty}
                 onClick={() => setSelectedDifficulty(difficulty)}
-                className={`px-4 py-2 rounded-full ${
-                  selectedDifficulty === difficulty
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                className={`px-4 py-2 rounded-full btn-animated ${selectedDifficulty === difficulty ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
               >
                 {difficulty}
               </button>
@@ -136,13 +141,13 @@ const Routes: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="bg-white rounded-lg overflow-hidden shadow-lg"
+                className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow hover:translate-x-2 fade-in-up"
               >
                 <div className="relative h-64">
                   <img
                     src={route.image}
                     alt={route.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover img-bw"
                   />
                   <div className="absolute top-4 right-4">
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -185,11 +190,11 @@ const Routes: React.FC = () => {
                     </ul>
                   </div>
                   <div className="flex gap-4">
-                    <button className="flex-1 bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700 transition-colors">
+                    <button className="flex-1 bg-primary-600 text-white py-2 rounded-lg btn-animated">
                       Подробнее
                     </button>
                     {route.gpxFile && (
-                      <button className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                      <button className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg btn-animated hover:translate-x-2">
                         <ArrowPathIcon className="h-5 w-5 mr-2" />
                         GPX
                       </button>
