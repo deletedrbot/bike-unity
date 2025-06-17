@@ -21,11 +21,25 @@ jobs:
       - name: 'Install dependencies (using npm ci for clean install)'
         run: npm ci # Use npm ci for clean installs in CI/CD
 
-      - name: 'Debug: Print build script from package.json'
-        run: cat package.json | grep '"build":'
+      - name: 'Debug: Print PATH environment variable'
+        run: echo "$PATH"
 
-      - name: 'Build project using npx vite build'
-        run: npx vite build
+      - name: 'Debug: List node_modules contents'
+        run: ls -l node_modules
+
+      - name: 'Debug: List node_modules/.bin contents'
+        run: ls -l node_modules/.bin
+
+      - name: 'Debug: Print npm version and cache path'
+        run: |
+          npm -v
+          npm config get cache
+
+      - name: 'Debug: Print package.json scripts'
+        run: cat package.json
+
+      - name: 'Build project' # Reverted to npm run build
+        run: npm run build
 
       - name: 'Deploy to GitHub Pages'
         uses: peaceiris/actions-gh-pages@v3
