@@ -1,95 +1,199 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { useParams, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   CalendarIcon,
-  MapPinIcon,
   UserGroupIcon,
+  MapPinIcon,
   ArrowLeftIcon,
+  EyeIcon,
+  ShareIcon,
+  HeartIcon,
   ClockIcon,
-  StarIcon,
-  ShieldCheckIcon,
+  UsersIcon,
+  FlagIcon,
 } from '@heroicons/react/24/outline';
-import { contactInfo } from '../data/contactInfo';
 
-interface Event {
+interface NewsItem {
   id: number;
   title: string;
+  content: string;
+  excerpt: string;
+  author: string;
   date: string;
-  time: string;
-  location: string;
-  difficulty: 'Начинающий' | 'Средний' | 'Продвинутый';
-  participants: number;
-  maxParticipants: number;
+  category: 'События' | 'Новости' | 'Объявления' | 'Отчеты';
   image: string;
-  description: string;
-  longDescription: string;
-  requirements: string[];
-  schedule: string[];
-  organizer: string;
-  price: string;
+  views: number;
+  tags: string[];
+  featured?: boolean;
+  type: 'news' | 'event';
+  location?: string;
+  participants?: number;
+  difficulty?: string;
 }
+
+const newsItems: NewsItem[] = [
+  // События с главной страницы
+  {
+    id: 1,
+    title: 'Весенний велопробег',
+    content: 'Приглашаем всех желающих на традиционный весенний велопробег! Это отличная возможность начать сезон в компании единомышленников. Маршрут пройдет по живописным местам Центрального парка Читы, подходит для всех уровней подготовки.\n\nПрограмма мероприятия:\n• 09:00 - Сбор участников у главного входа в парк\n• 09:30 - Приветствие и инструктаж по безопасности\n• 10:00 - Начало велопробега\n• 12:00 - Привал с перекусом\n• 13:00 - Продолжение маршрута\n• 15:00 - Завершение и награждение\n\nЧто взять с собой:\n• Велосипед в исправном состоянии\n• Защитный шлем (обязательно!)\n• Воду и легкий перекус\n• Удобную одежду по погоде\n• Хорошее настроение!\n\nРегистрация обязательна. Количество мест ограничено.',
+    excerpt: 'Традиционный весенний велопробег для всех желающих',
+    author: 'Команда Bike Unity',
+    date: '2024-04-15',
+    category: 'События',
+    image: '/images/event-1.jpg',
+    views: 245,
+    tags: ['велопробег', 'весна', 'парк'],
+    featured: true,
+    type: 'event',
+    location: 'Центральный парк Читы',
+    participants: 25,
+    difficulty: 'Начинающий'
+  },
+  {
+    id: 2,
+    title: 'Ночная прогулка',
+    content: 'Романтичная ночная прогулка по набережной Читы. Уникальная возможность увидеть город в ночных огнях. Маршрут включает остановки у самых красивых видовых точек.\n\nОсобенности маршрута:\n• Длина: 15 км\n• Время в пути: 2-3 часа\n• Уровень сложности: средний\n• Остановки для фото: 5 точек\n\nМаршрут:\n1. Сбор у памятника Ленину\n2. Набережная Читы\n3. Мост через реку\n4. Смотровая площадка\n5. Парк Победы\n6. Возвращение к месту старта\n\nТребования к участникам:\n• Велосипед с исправными тормозами\n• Фара и задний фонарь (обязательно!)\n• Светоотражающие элементы\n• Теплая одежда\n\nБезопасность:\n• Группа будет сопровождаться инструктором\n• Все участники должны соблюдать правила дорожного движения\n• При плохой погоде мероприятие может быть перенесено',
+    excerpt: 'Романтичная ночная прогулка по набережной',
+    author: 'Мария Иванова',
+    date: '2024-04-22',
+    category: 'События',
+    image: '/images/event-2.jpg',
+    views: 189,
+    tags: ['ночная прогулка', 'набережная', 'романтика'],
+    type: 'event',
+    location: 'Набережная Читы',
+    participants: 18,
+    difficulty: 'Средний'
+  },
+  {
+    id: 3,
+    title: 'Горный маршрут',
+    content: 'Экстремальный горный маршрут для опытных райдеров. Сложные технические участки, крутые спуски и подъемы. Только для подготовленных велосипедистов с защитным снаряжением.\n\nТехнические характеристики:\n• Протяженность: 25 км\n• Перепад высот: 800 м\n• Время в пути: 4-6 часов\n• Уровень сложности: продвинутый\n\nМаршрут включает:\n• Крутые подъемы (до 15%)\n• Технические спуски\n• Узкие тропы\n• Каменистые участки\n• Речные переправы\n\nОбязательное снаряжение:\n• Горный велосипед\n• Полная защита (шлем, наколенники, налокотники)\n• Запасные камеры и инструменты\n• Аптечка первой помощи\n• GPS-навигатор\n• Запас воды и еды\n\nТребования к участникам:\n• Опыт катания не менее 2 лет\n• Хорошая физическая подготовка\n• Умение выполнять базовые трюки\n• Знание техники безопасности\n\nВАЖНО: Маршрут проходит вдали от цивилизации. Все участники должны быть готовы к экстремальным условиям.',
+    excerpt: 'Экстремальный горный маршрут для опытных райдеров',
+    author: 'Дмитрий Смирнов',
+    date: '2024-04-29',
+    category: 'События',
+    image: '/images/event-3.jpg',
+    views: 156,
+    tags: ['горный маршрут', 'экстрим', 'техника'],
+    type: 'event',
+    location: 'Окрестности Читы',
+    participants: 12,
+    difficulty: 'Продвинутый'
+  },
+  // Новости
+  {
+    id: 4,
+    title: 'Открытие нового сезона велопрогулок в Чите',
+    content: 'Мы рады объявить о начале нового сезона велопрогулок! В этом году мы подготовили множество интересных маршрутов для всех уровней подготовки. Присоединяйтесь к нашему сообществу и откройте для себя красоту Забайкалья на двух колесах.\n\nЧто нового в этом сезоне:\n• 5 новых маршрутов разной сложности\n• Улучшенная система безопасности\n• Новые инструкторы с сертификатами\n• Специальные программы для детей\n• Вечерние прогулки по городу\n• Выездные туры по области\n\nРасписание на апрель:\n• 15 апреля - Весенний велопробег\n• 22 апреля - Ночная прогулка\n• 29 апреля - Горный маршрут\n• Каждые выходные - Групповые прогулки\n\nКак присоединиться:\n1. Зарегистрируйтесь на сайте\n2. Выберите подходящий маршрут\n3. Приходите на сбор в указанное время\n4. Получайте удовольствие от катания!\n\nСтоимость участия:\n• Разовое участие: 500 руб\n• Абонемент на месяц: 2000 руб\n• Семейный абонемент: 3500 руб\n\nДля детей до 14 лет участие бесплатное при сопровождении взрослых.',
+    excerpt: 'Начинается новый сезон велопрогулок с множеством интересных маршрутов',
+    author: 'Команда Bike Unity',
+    date: '2024-04-15',
+    category: 'Новости',
+    image: '/images/news-season-opening.jpg',
+    views: 245,
+    tags: ['сезон', 'открытие', 'маршруты'],
+    featured: true,
+    type: 'news'
+  },
+  {
+    id: 5,
+    title: 'Новый маршрут: "Читинские холмы"',
+    content: 'Представляем вашему вниманию новый маршрут "Читинские холмы" - идеальный выбор для райдеров среднего уровня. Маршрут включает живописные виды на город, лесные тропы и небольшие технические участки.\n\nОписание маршрута:\n• Протяженность: 18 км\n• Время в пути: 2-3 часа\n• Перепад высот: 300 м\n• Уровень сложности: средний\n\nОсновные точки маршрута:\n1. Старт: Парк ОДОРА\n2. Подъем на первый холм\n3. Смотровая площадка "Орлиное гнездо"\n4. Лесная тропа\n5. Спуск к озеру\n6. Возвращение через парк\n\nОсобенности маршрута:\n• 70% асфальтированных дорог\n• 20% грунтовых троп\n• 10% технических участков\n• 5 остановок для отдыха\n• 3 смотровые площадки\n\nРекомендуемое снаряжение:\n• Горный или гибридный велосипед\n• Шлем (обязательно)\n• Вода и легкий перекус\n• Удобная одежда\n• Фотоаппарат\n\nМаршрут подходит для:\n• Райдеров со стажем от 6 месяцев\n• Семей с детьми от 12 лет\n• Групп до 15 человек\n\nБезопасность:\n• Маршрут проходит в черте города\n• Мобильная связь работает везде\n• Близость к дорогам для эвакуации\n• Регулярные патрули спасателей',
+    excerpt: 'Добавлен новый маршрут для райдеров среднего уровня',
+    author: 'Дмитрий Смирнов',
+    date: '2024-04-10',
+    category: 'Новости',
+    image: '/images/news-new-route.jpg',
+    views: 189,
+    tags: ['маршрут', 'холмы', 'средний уровень'],
+    type: 'news'
+  },
+  {
+    id: 6,
+    title: 'Отчет о поездке: "Весенний старт 2024"',
+    content: 'В минувшие выходные состоялась первая групповая поездка сезона "Весенний старт 2024". В мероприятии приняли участие 15 райдеров разного уровня подготовки. Погода была отличной, настроение - еще лучше!\n\nСтатистика поездки:\n• Участников: 15 человек\n• Протяженность: 25 км\n• Время в пути: 3 часа\n• Средняя скорость: 15 км/ч\n• Остановок: 4\n\nМаршрут:\n1. Сбор у памятника Ленину (09:00)\n2. Выезд на набережную\n3. Остановка у моста (фотосессия)\n4. Продолжение по парку\n5. Привал у озера (перекус)\n6. Возвращение через центр города\n7. Завершение у старта (12:00)\n\nУчастники:\n• 8 мужчин и 7 женщин\n• Возраст: от 18 до 45 лет\n• Опыт: от новичков до экспертов\n\nОтзывы участников:\n"Отличная поездка! Погода была идеальной, компания - замечательная. Обязательно приду еще!" - Анна, 25 лет\n\n"Первый раз участвовал в групповой поездке. Все было организовано на высшем уровне!" - Михаил, 32 года\n\n"Спасибо инструкторам за безопасность и интересный маршрут!" - Елена, 28 лет\n\nФотографии с поездки можно посмотреть в нашей галерее. Следующая групповая поездка состоится в следующее воскресенье.',
+    excerpt: 'Успешно завершена первая групповая поездка сезона',
+    author: 'Мария Иванова',
+    date: '2024-04-08',
+    category: 'Отчеты',
+    image: '/images/news-spring-start.jpg',
+    views: 156,
+    tags: ['отчет', 'групповая поездка', 'весна'],
+    type: 'news'
+  },
+  {
+    id: 7,
+    title: 'Обновление правил безопасности',
+    content: 'В связи с началом нового сезона мы обновили правила безопасности для участников наших мероприятий. Теперь все участники обязаны использовать защитное снаряжение и следовать инструкциям инструкторов.\n\nНовые правила безопасности:\n\nОбязательное снаряжение:\n• Шлем (для всех участников)\n• Светоотражающие элементы (для вечерних поездок)\n• Фара и задний фонарь (для ночных поездок)\n• Аптечка первой помощи (для групп)\n\nПравила поведения:\n• Соблюдение дистанции между участниками\n• Обязательное использование жестов для сигнализации\n• Остановка при поломке велосипеда\n• Следование указаниям инструктора\n\nТребования к велосипеду:\n• Исправные тормоза\n• Правильно накачанные шины\n• Работающие фары (для вечерних поездок)\n• Отсутствие повреждений рамы\n\nМедицинские требования:\n• Отсутствие противопоказаний к физическим нагрузкам\n• Наличие страховки (рекомендуется)\n• Информирование инструктора о хронических заболеваниях\n\nОтветственность:\n• Участники несут ответственность за свое здоровье\n• Организаторы обеспечивают безопасность маршрута\n• Инструкторы следят за соблюдением правил\n\nВ случае нарушения правил участник может быть отстранен от поездки без возврата средств.',
+    excerpt: 'Обновлены правила безопасности для участников мероприятий',
+    author: 'Александр Петров',
+    date: '2024-04-05',
+    category: 'Объявления',
+    image: '/images/news-safety-rules.jpg',
+    views: 203,
+    tags: ['безопасность', 'правила', 'снаряжение'],
+    type: 'news'
+  },
+  {
+    id: 8,
+    title: 'Интервью с чемпионом Забайкалья',
+    content: 'Мы взяли интервью у нашего земляка, чемпиона Забайкалья по маунтинбайку. Он поделился своими секретами подготовки, любимыми маршрутами и планами на будущий сезон.\n\nАлексей Соколов - чемпион Забайкалья по маунтинбайку 2023 года, участник всероссийских соревнований, инструктор по велоспорту.\n\n- Алексей, расскажите о своем пути в велоспорте.\n\n"Я начал кататься в 12 лет, когда родители подарили мне первый горный велосипед. Сначала это были просто покатушки с друзьями, потом появился интерес к соревнованиям. В 16 лет я впервые участвовал в региональных соревнованиях и занял третье место. Это дало мне мотивацию для дальнейших тренировок."\n\n- Какие у вас любимые маршруты в Чите?\n\n"Очень люблю маршрут "Читинские холмы" - он идеально подходит для тренировок. Также часто катаюсь в окрестностях города, особенно в районе Титовской сопки. Там есть отличные технические участки для отработки навыков."\n\n- Как вы готовитесь к соревнованиям?\n\n"Тренировки проходят круглый год. Зимой - это тренажерный зал и велотренажер, весной и летом - выезды на природу. Важно не только физическая подготовка, но и техническая. Много времени уделяю отработке трюков и прохождению сложных участков."\n\n- Какие планы на будущий сезон?\n\n"В этом году планирую участвовать в чемпионате России и, возможно, в международных соревнованиях. Также хочу провести мастер-классы для начинающих райдеров в нашем сообществе."\n\n- Что бы вы посоветовали новичкам?\n\n"Начинайте с простых маршрутов, не торопитесь. Обязательно используйте защитное снаряжение и не стесняйтесь обращаться за помощью к опытным райдерам. Велоспорт - это не только спорт, но и образ жизни."\n\nАлексей также поделился планами на проведение тренировочных лагерей для детей и подростков в летний период.',
+    excerpt: 'Эксклюзивное интервью с чемпионом Забайкалья',
+    author: 'Екатерина Новикова',
+    date: '2024-04-03',
+    category: 'Новости',
+    image: '/images/news-champion-interview.jpg',
+    views: 178,
+    tags: ['интервью', 'чемпион', 'маунтинбайк'],
+    type: 'news'
+  },
+  {
+    id: 9,
+    title: 'Фотоотчет: Зимние покатушки',
+    content: 'Несмотря на холодную погоду, наши энтузиасты продолжают кататься! Представляем фотоотчет с зимних покатушек по заснеженным тропам Читы.\n\nЗимний сезон 2023-2024 выдался особенно активным. Наши райдеры не прекращали тренировки даже при температуре -20°C. Специально для зимних покатушек мы разработали несколько безопасных маршрутов.\n\nОсобенности зимнего катания:\n• Специальные зимние шины с шипами\n• Утепленная одежда и обувь\n• Укороченные маршруты\n• Обязательное сопровождение\n• Теплые остановки для отдыха\n\nМаршруты зимнего сезона:\n1. "Зимний парк" - 10 км по парковым дорожкам\n2. "Снежные холмы" - 15 км по заснеженным тропам\n3. "Городская зима" - 8 км по очищенным улицам\n\nСтатистика зимнего сезона:\n• Проведено 12 групповых поездок\n• Участвовало 45 человек\n• Общий километраж: 180 км\n• Средняя температура: -15°C\n• Фотографий сделано: 200+\n\nОтзывы участников:\n"Зимнее катание - это особое удовольствие! Свежий воздух, красивые пейзажи, отличная компания." - Дмитрий\n\n"Сначала боялся кататься зимой, но с правильным снаряжением и инструктором все получилось!" - Анна\n\n"Зимние покатушки закаляют характер и укрепляют здоровье!" - Сергей\n\nФотографии с зимних покатушек можно посмотреть в нашей галерее. Следующий зимний сезон начнется в ноябре 2024 года.',
+    excerpt: 'Красивый фотоотчет с зимних покатушек',
+    author: 'Команда Bike Unity',
+    date: '2024-03-28',
+    category: 'Отчеты',
+    image: '/images/news-winter-rides.jpg',
+    views: 134,
+    tags: ['фотоотчет', 'зима', 'покатушки'],
+    type: 'news'
+  },
+];
 
 const EventDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [event, setEvent] = useState<Event | null>(null);
+  const [item, setItem] = useState<NewsItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Имитация загрузки данных
     const timer = setTimeout(() => {
-      const mockEvent: Event = {
-        id: parseInt(id || '1'),
-        title: 'Весенний старт',
-        date: '15 апреля 2024',
-        time: '09:00',
-        location: 'Центральный парк Читы',
-        difficulty: 'Начинающий',
-        participants: 12,
-        maxParticipants: 20,
-        image: '/images/event-1.jpg',
-        description: 'Открытие сезона для начинающих райдеров. Базовые навыки и безопасность.',
-        longDescription: 'Приглашаем всех желающих на открытие велосипедного сезона! Это отличная возможность для начинающих райдеров познакомиться с сообществом, освоить базовые навыки безопасного катания и найти новых друзей. Маршрут пройдет по живописным местам Центрального парка Читы.',
-        requirements: [
-          'Велосипед в исправном состоянии',
-          'Шлем (обязательно)',
-          'Удобная одежда и обувь',
-          'Вода и легкий перекус',
-          'Хорошее настроение'
-        ],
-        schedule: [
-          '09:00 - Сбор участников',
-          '09:30 - Инструктаж по безопасности',
-          '10:00 - Начало маршрута',
-          '12:00 - Привал и общение',
-          '13:00 - Продолжение маршрута',
-          '15:00 - Завершение мероприятия'
-        ],
-        organizer: 'Александр Петров',
-        price: 'Бесплатно'
-      };
-      setEvent(mockEvent);
+      const foundItem = newsItems.find(news => news.id === Number(id));
+      setItem(foundItem || null);
       setIsLoading(false);
-    }, 1000);
-
+    }, 800);
     return () => clearTimeout(timer);
   }, [id]);
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-white via-secondary-50 to-white flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+        <div className="spinner" />
       </div>
     );
   }
 
-  if (!event) {
+  if (!item) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-white via-secondary-50 to-white flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-secondary-900 mb-4">Событие не найдено</h2>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Новость не найдена</h1>
           <Link to="/events" className="btn-primary">
-            Вернуться к событиям
+            Вернуться к новостям
           </Link>
         </div>
       </div>
@@ -98,228 +202,178 @@ const EventDetail: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-secondary-50 to-white">
-      {/* Hero Section */}
-      <section className="hero relative overflow-hidden">
-        <div className="hero-pattern"></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-500/20 via-accent-500/20 to-primary-600/20"></div>
-        
-        <div className="container relative z-10">
-          <div className="hero-content">
+      {/* Back Button */}
+      <div className="container pt-8">
+        <Link 
+          to="/events"
+          className="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium mb-8"
+        >
+          <ArrowLeftIcon className="h-5 w-5 mr-2" />
+          Назад к новостям
+        </Link>
+      </div>
+
+      {/* Article Content */}
+      <div className="container pb-16">
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-8"
+          >
+            <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+              <span className="px-3 py-1 rounded-full bg-primary-100 text-primary-700 font-medium">
+                {item.category}
+              </span>
+              <span className="flex items-center">
+                <CalendarIcon className="h-4 w-4 mr-1" />
+                {new Date(item.date).toLocaleDateString('ru-RU', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </span>
+              <span className="flex items-center">
+                <UserGroupIcon className="h-4 w-4 mr-1" />
+                {item.author}
+              </span>
+              <span className="flex items-center">
+                <EyeIcon className="h-4 w-4 mr-1" />
+                {item.views} просмотров
+              </span>
+            </div>
+
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+              {item.title}
+            </h1>
+
+            <p className="text-xl text-gray-600 leading-relaxed">
+              {item.excerpt}
+            </p>
+          </motion.div>
+
+          {/* Event Details (if event) */}
+          {item.type === 'event' && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="mb-8"
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 mb-8"
             >
-              <Link to="/events" className="inline-flex items-center text-white hover:text-primary-100 transition-colors">
-                <ArrowLeftIcon className="w-5 h-5 mr-2" />
-                Назад к событиям
-              </Link>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="inline-flex items-center px-6 py-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium mb-8"
-            >
-              <span className="w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse"></span>
-              {event.date} • {event.time}
-            </motion.div>
-
-            <motion.h1 
-              className="text-4xl md:text-6xl font-bold mb-8 leading-tight"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-            >
-              <span className="bg-gradient-to-r from-white to-primary-100 bg-clip-text text-transparent">
-                {event.title}
-              </span>
-            </motion.h1>
-
-            <motion.p 
-              className="text-xl text-primary-100 mb-8 max-w-3xl leading-relaxed"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-            >
-              {event.description}
-            </motion.p>
-
-            <motion.div 
-              className="flex flex-wrap gap-4"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.8 }}
-            >
-              <span className={`badge ${
-                event.difficulty === 'Начинающий' ? 'badge-primary' :
-                event.difficulty === 'Продвинутый' ? 'badge-accent' :
-                'badge-secondary'
-              }`}>
-                {event.difficulty}
-              </span>
-              <span className="badge badge-secondary">
-                {event.participants}/{event.maxParticipants} участников
-              </span>
-              <span className="badge badge-primary">
-                {event.price}
-              </span>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Event Details Section */}
-      <section className="section">
-        <div className="container">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            {/* Main Content */}
-            <div className="lg:col-span-2">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className="mb-12"
-              >
-                <h2 className="text-3xl font-bold mb-6">О событии</h2>
-                <p className="text-lg text-secondary-600 leading-relaxed mb-6">
-                  {event.longDescription}
-                </p>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="mb-12"
-              >
-                <h3 className="text-2xl font-bold mb-6">Расписание</h3>
-                <div className="space-y-4">
-                  {event.schedule.map((item, index) => (
-                    <div key={index} className="flex items-center p-4 bg-white rounded-xl shadow-sm">
-                      <ClockIcon className="w-5 h-5 text-primary-500 mr-4" />
-                      <span className="text-secondary-700">{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-              >
-                <h3 className="text-2xl font-bold mb-6">Требования</h3>
-                <div className="space-y-3">
-                  {event.requirements.map((requirement, index) => (
-                    <div key={index} className="flex items-center">
-                      <ShieldCheckIcon className="w-5 h-5 text-green-500 mr-3" />
-                      <span className="text-secondary-700">{requirement}</span>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Sidebar */}
-            <div className="lg:col-span-1">
-              <motion.div
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className="card-hover p-8 sticky top-8"
-              >
-                <h3 className="text-2xl font-bold mb-6">Информация</h3>
-                
-                <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Детали события</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {item.location && (
                   <div className="flex items-center">
-                    <CalendarIcon className="w-5 h-5 text-primary-500 mr-3" />
+                    <MapPinIcon className="h-6 w-6 text-primary-600 mr-3" />
                     <div>
-                      <div className="font-semibold text-secondary-900">{event.date}</div>
-                      <div className="text-secondary-600">{event.time}</div>
+                      <p className="text-sm text-gray-500">Место проведения</p>
+                      <p className="font-medium text-gray-900">{item.location}</p>
                     </div>
                   </div>
-
+                )}
+                {item.participants && (
                   <div className="flex items-center">
-                    <MapPinIcon className="w-5 h-5 text-primary-500 mr-3" />
+                    <UsersIcon className="h-6 w-6 text-primary-600 mr-3" />
                     <div>
-                      <div className="font-semibold text-secondary-900">Место встречи</div>
-                      <div className="text-secondary-600">{event.location}</div>
+                      <p className="text-sm text-gray-500">Участников</p>
+                      <p className="font-medium text-gray-900">{item.participants} человек</p>
                     </div>
                   </div>
-
+                )}
+                {item.difficulty && (
                   <div className="flex items-center">
-                    <UserGroupIcon className="w-5 h-5 text-primary-500 mr-3" />
+                    <FlagIcon className="h-6 w-6 text-primary-600 mr-3" />
                     <div>
-                      <div className="font-semibold text-secondary-900">Участники</div>
-                      <div className="text-secondary-600">{event.participants}/{event.maxParticipants}</div>
+                      <p className="text-sm text-gray-500">Уровень сложности</p>
+                      <p className="font-medium text-gray-900">{item.difficulty}</p>
                     </div>
                   </div>
-
-                  <div className="flex items-center">
-                    <StarIcon className="w-5 h-5 text-primary-500 mr-3" />
-                    <div>
-                      <div className="font-semibold text-secondary-900">Организатор</div>
-                      <div className="text-secondary-600">{event.organizer}</div>
-                    </div>
-                  </div>
-
-                  <div className="pt-6 border-t border-secondary-200">
-                    <div className="text-2xl font-bold text-primary-600 mb-2">{event.price}</div>
-                    <div className="text-secondary-600 mb-6">Стоимость участия</div>
-                    
-                    <Link to="/contact" className="btn-primary w-full mb-4">
-                      Записаться на событие
-                    </Link>
-                    
-                    <Link to={`tel:${contactInfo.phone}`} className="btn-outline w-full">
-                      Позвонить организатору
-                    </Link>
+                )}
+                <div className="flex items-center">
+                  <ClockIcon className="h-6 w-6 text-primary-600 mr-3" />
+                  <div>
+                    <p className="text-sm text-gray-500">Дата</p>
+                    <p className="font-medium text-gray-900">
+                      {new Date(item.date).toLocaleDateString('ru-RU', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </p>
                   </div>
                 </div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </section>
+              </div>
+            </motion.div>
+          )}
 
-      {/* CTA Section */}
-      <section className="section gradient-bg">
-        <div className="container">
-          <motion.div 
-            className="text-center"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+          {/* Main Image */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mb-8"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Есть вопросы о событии?
-            </h2>
-            <p className="text-xl text-secondary-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Свяжитесь с организатором или напишите нам, и мы ответим на все ваши вопросы
-            </p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link to="/contact" className="btn-primary text-lg px-10 py-4">
-                  Связаться с нами
-                </Link>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link to="/events" className="btn-outline text-lg px-10 py-4">
-                  Все события
-                </Link>
-              </motion.div>
+            <img
+              src={item.image}
+              alt={item.title}
+              className="w-full h-96 md:h-[500px] object-cover rounded-2xl shadow-lg"
+            />
+          </motion.div>
+
+          {/* Article Body */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100"
+          >
+            <div className="prose prose-lg max-w-none">
+              {item.content.split('\n\n').map((paragraph, index) => (
+                <p key={index} className="text-gray-700 leading-relaxed mb-6">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+
+            {/* Tags */}
+            <div className="mt-8 pt-8 border-t border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Теги</h3>
+              <div className="flex flex-wrap gap-2">
+                {item.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="mt-8 pt-8 border-t border-gray-200 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <button className="flex items-center gap-2 text-gray-600 hover:text-primary-600 transition-colors">
+                  <HeartIcon className="h-5 w-5" />
+                  <span>Нравится</span>
+                </button>
+                <button className="flex items-center gap-2 text-gray-600 hover:text-primary-600 transition-colors">
+                  <ShareIcon className="h-5 w-5" />
+                  <span>Поделиться</span>
+                </button>
+              </div>
+              
+              {item.type === 'event' && (
+                <button className="btn-primary">
+                  Записаться на событие
+                </button>
+              )}
             </div>
           </motion.div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };

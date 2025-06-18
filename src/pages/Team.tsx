@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline';
 
 interface TeamMember {
@@ -171,12 +172,12 @@ export default function Team() {
               Если вы разделяете нашу любовь к эндуро и хотите внести свой вклад в развитие сообщества, 
               свяжитесь с нами!
             </p>
-            <a
-              href="/contact"
+            <Link
+              to="/contact"
               className="btn-animated text-lg px-8 py-3"
             >
               Связаться с нами
-            </a>
+            </Link>
           </motion.div>
         </div>
       </section>

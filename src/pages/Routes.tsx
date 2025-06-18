@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { MapIcon, ClockIcon, ArrowTrendingUpIcon, ArrowPathIcon, MapPinIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { Link } from 'react-router-dom';
 
 // Константы для сложности
 const DIFFICULTY_LEVELS = {
@@ -392,9 +393,9 @@ const Routes: React.FC = () => {
                       </ul>
                     </div>
                     <div className="flex gap-4">
-                      <button className="flex-1 btn-primary">
+                      <Link to={`/routes/${route.id}`} className="flex-1 btn-primary">
                         Подробнее
-                      </button>
+                      </Link>
                       {route.gpxFile && (
                         <button className="btn-secondary">
                           <ArrowPathIcon className="h-5 w-5 mr-2" />

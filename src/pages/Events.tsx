@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import {
   CalendarIcon,
   UserGroupIcon,
   NewspaperIcon,
   EyeIcon,
+  MapPinIcon,
+  ArrowRightIcon,
 } from '@heroicons/react/24/outline';
 
 interface NewsItem {
@@ -19,24 +22,80 @@ interface NewsItem {
   views: number;
   tags: string[];
   featured?: boolean;
+  type: 'news' | 'event';
+  location?: string;
+  participants?: number;
+  difficulty?: string;
 }
 
 const newsItems: NewsItem[] = [
+  // События с главной страницы
   {
     id: 1,
+    title: 'Весенний велопробег',
+    content: 'Приглашаем всех желающих на традиционный весенний велопробег! Это отличная возможность начать сезон в компании единомышленников. Маршрут пройдет по живописным местам Центрального парка Читы, подходит для всех уровней подготовки.',
+    excerpt: 'Традиционный весенний велопробег для всех желающих',
+    author: 'Команда Bike Unity',
+    date: '2024-04-15',
+    category: 'События',
+    image: '/images/event-1.jpg',
+    views: 245,
+    tags: ['велопробег', 'весна', 'парк'],
+    featured: true,
+    type: 'event',
+    location: 'Центральный парк Читы',
+    participants: 25,
+    difficulty: 'Начинающий'
+  },
+  {
+    id: 2,
+    title: 'Ночная прогулка',
+    content: 'Романтичная ночная прогулка по набережной Читы. Уникальная возможность увидеть город в ночных огнях. Маршрут включает остановки у самых красивых видовых точек.',
+    excerpt: 'Романтичная ночная прогулка по набережной',
+    author: 'Мария Иванова',
+    date: '2024-04-22',
+    category: 'События',
+    image: '/images/event-2.jpg',
+    views: 189,
+    tags: ['ночная прогулка', 'набережная', 'романтика'],
+    type: 'event',
+    location: 'Набережная Читы',
+    participants: 18,
+    difficulty: 'Средний'
+  },
+  {
+    id: 3,
+    title: 'Горный маршрут',
+    content: 'Экстремальный горный маршрут для опытных райдеров. Сложные технические участки, крутые спуски и подъемы. Только для подготовленных велосипедистов с защитным снаряжением.',
+    excerpt: 'Экстремальный горный маршрут для опытных райдеров',
+    author: 'Дмитрий Смирнов',
+    date: '2024-04-29',
+    category: 'События',
+    image: '/images/event-3.jpg',
+    views: 156,
+    tags: ['горный маршрут', 'экстрим', 'техника'],
+    type: 'event',
+    location: 'Окрестности Читы',
+    participants: 12,
+    difficulty: 'Продвинутый'
+  },
+  // Новости
+  {
+    id: 4,
     title: 'Открытие нового сезона велопрогулок в Чите',
     content: 'Мы рады объявить о начале нового сезона велопрогулок! В этом году мы подготовили множество интересных маршрутов для всех уровней подготовки. Присоединяйтесь к нашему сообществу и откройте для себя красоту Забайкалья на двух колесах.',
     excerpt: 'Начинается новый сезон велопрогулок с множеством интересных маршрутов',
     author: 'Команда Bike Unity',
     date: '2024-04-15',
-    category: 'События',
+    category: 'Новости',
     image: '/images/news-season-opening.jpg',
     views: 245,
     tags: ['сезон', 'открытие', 'маршруты'],
     featured: true,
+    type: 'news'
   },
   {
-    id: 2,
+    id: 5,
     title: 'Новый маршрут: "Читинские холмы"',
     content: 'Представляем вашему вниманию новый маршрут "Читинские холмы" - идеальный выбор для райдеров среднего уровня. Маршрут включает живописные виды на город, лесные тропы и небольшие технические участки.',
     excerpt: 'Добавлен новый маршрут для райдеров среднего уровня',
@@ -46,9 +105,10 @@ const newsItems: NewsItem[] = [
     image: '/images/news-new-route.jpg',
     views: 189,
     tags: ['маршрут', 'холмы', 'средний уровень'],
+    type: 'news'
   },
   {
-    id: 3,
+    id: 6,
     title: 'Отчет о поездке: "Весенний старт 2024"',
     content: 'В минувшие выходные состоялась первая групповая поездка сезона "Весенний старт 2024". В мероприятии приняли участие 15 райдеров разного уровня подготовки. Погода была отличной, настроение - еще лучше!',
     excerpt: 'Успешно завершена первая групповая поездка сезона',
@@ -58,9 +118,10 @@ const newsItems: NewsItem[] = [
     image: '/images/news-spring-start.jpg',
     views: 156,
     tags: ['отчет', 'групповая поездка', 'весна'],
+    type: 'news'
   },
   {
-    id: 4,
+    id: 7,
     title: 'Обновление правил безопасности',
     content: 'В связи с началом нового сезона мы обновили правила безопасности для участников наших мероприятий. Теперь все участники обязаны использовать защитное снаряжение и следовать инструкциям инструкторов.',
     excerpt: 'Обновлены правила безопасности для участников мероприятий',
@@ -70,9 +131,10 @@ const newsItems: NewsItem[] = [
     image: '/images/news-safety-rules.jpg',
     views: 203,
     tags: ['безопасность', 'правила', 'снаряжение'],
+    type: 'news'
   },
   {
-    id: 5,
+    id: 8,
     title: 'Интервью с чемпионом Забайкалья',
     content: 'Мы взяли интервью у нашего земляка, чемпиона Забайкалья по маунтинбайку. Он поделился своими секретами подготовки, любимыми маршрутами и планами на будущий сезон.',
     excerpt: 'Эксклюзивное интервью с чемпионом Забайкалья',
@@ -82,9 +144,10 @@ const newsItems: NewsItem[] = [
     image: '/images/news-champion-interview.jpg',
     views: 178,
     tags: ['интервью', 'чемпион', 'маунтинбайк'],
+    type: 'news'
   },
   {
-    id: 6,
+    id: 9,
     title: 'Фотоотчет: Зимние покатушки',
     content: 'Несмотря на холодную погоду, наши энтузиасты продолжают кататься! Представляем фотоотчет с зимних покатушек по заснеженным тропам Читы.',
     excerpt: 'Красивый фотоотчет с зимних покатушек',
@@ -94,6 +157,7 @@ const newsItems: NewsItem[] = [
     image: '/images/news-winter-rides.jpg',
     views: 134,
     tags: ['фотоотчет', 'зима', 'покатушки'],
+    type: 'news'
   },
 ];
 
@@ -152,7 +216,7 @@ export default function Events() {
               className="inline-flex items-center px-6 py-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium mb-8"
             >
               <NewspaperIcon className="h-5 w-5 mr-2" />
-              Новостной канал
+              Новости и события
             </motion.div>
 
             <motion.h1 
@@ -191,7 +255,7 @@ export default function Events() {
             <div className="relative flex-1 max-w-md">
               <input
                 type="text"
-                placeholder="Поиск новостей..."
+                placeholder="Поиск новостей и событий..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full px-4 py-3 pl-12 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-300"
@@ -252,6 +316,13 @@ export default function Events() {
                         {item.views} просмотров
                       </span>
                     </div>
+                    {item.type === 'event' && item.difficulty && (
+                      <div className="absolute bottom-4 left-4">
+                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-500 text-white">
+                          {item.difficulty}
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="p-6">
                     <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
@@ -263,9 +334,22 @@ export default function Events() {
                         <UserGroupIcon className="h-4 w-4 mr-1" />
                         {item.author}
                       </span>
+                      {item.type === 'event' && item.location && (
+                        <span className="flex items-center">
+                          <MapPinIcon className="h-4 w-4 mr-1" />
+                          {item.location}
+                        </span>
+                      )}
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
                     <p className="text-gray-600 mb-4">{item.excerpt}</p>
+                    {item.type === 'event' && item.participants && (
+                      <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                        <span className="text-sm text-gray-600">
+                          Участников: <strong>{item.participants}</strong>
+                        </span>
+                      </div>
+                    )}
                     <div className="flex items-center justify-between">
                       <div className="flex gap-2">
                         {item.tags.slice(0, 2).map((tag) => (
@@ -274,9 +358,13 @@ export default function Events() {
                           </span>
                         ))}
                       </div>
-                      <button className="btn-primary text-sm px-4 py-2">
-                        Читать
-                      </button>
+                      <Link 
+                        to={`/events/${item.id}`}
+                        className="btn-primary text-sm px-4 py-2"
+                      >
+                        {item.type === 'event' ? 'Подробнее' : 'Читать'}
+                        <ArrowRightIcon className="ml-2 h-4 w-4" />
+                      </Link>
                     </div>
                   </div>
                 </motion.div>
@@ -317,6 +405,13 @@ export default function Events() {
                         {item.category}
                       </span>
                     </div>
+                    {item.type === 'event' && item.difficulty && (
+                      <div className="absolute top-3 right-3">
+                        <span className="px-2 py-1 rounded-full text-xs font-semibold bg-green-500 text-white">
+                          {item.difficulty}
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="p-4">
                     <div className="flex items-center gap-3 text-xs text-gray-500 mb-2">
@@ -331,6 +426,12 @@ export default function Events() {
                     </div>
                     <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">{item.title}</h3>
                     <p className="text-gray-600 text-sm mb-3 line-clamp-3">{item.excerpt}</p>
+                    {item.type === 'event' && item.location && (
+                      <div className="mb-3 text-xs text-gray-500">
+                        <MapPinIcon className="h-3 w-3 inline mr-1" />
+                        {item.location}
+                      </div>
+                    )}
                     <div className="flex items-center justify-between">
                       <div className="flex gap-1">
                         {item.tags.slice(0, 1).map((tag) => (
@@ -339,9 +440,12 @@ export default function Events() {
                           </span>
                         ))}
                       </div>
-                      <button className="text-primary-600 hover:text-primary-700 text-sm font-medium">
-                        Подробнее →
-                      </button>
+                      <Link 
+                        to={`/events/${item.id}`}
+                        className="text-primary-600 hover:text-primary-700 text-sm font-medium"
+                      >
+                        {item.type === 'event' ? 'Подробнее' : 'Читать'} →
+                      </Link>
                     </div>
                   </div>
                 </motion.div>
