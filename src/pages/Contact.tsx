@@ -1,10 +1,13 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   MapPinIcon,
   PhoneIcon,
   EnvelopeIcon,
+  PaperAirplaneIcon,
+  ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
+import { contactInfo } from '../data/contactInfo';
 
 interface FormData {
   name: string;
@@ -13,7 +16,7 @@ interface FormData {
   message: string;
 }
 
-export default function Contact() {
+const Contact: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
@@ -21,11 +24,23 @@ export default function Contact() {
     message: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    
+    // Имитация отправки формы
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
     console.log('Form submitted:', formData);
-    // Здесь будет логика отправки формы
+    setSubmitSuccess(true);
+    setIsSubmitting(false);
     setFormData({ name: '', email: '', subject: '', message: '' });
+    
+    // Сброс уведомления через 5 секунд
+    setTimeout(() => setSubmitSuccess(false), 5000);
   };
 
   const handleChange = (
@@ -35,184 +50,199 @@ export default function Contact() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const contactInfoItems = [
+    {
+      icon: MapPinIcon,
+      title: 'Адрес',
+      content: contactInfo.location,
+      description: 'Наш офис находится в центре города',
+      color: 'from-blue-500 to-blue-600',
+      bgColor: 'from-blue-50 to-blue-100'
+    },
+    {
+      icon: PhoneIcon,
+      title: 'Телефон',
+      content: contactInfo.phone,
+      description: 'Звоните в любое время',
+      color: 'from-green-500 to-green-600',
+      bgColor: 'from-green-50 to-green-100'
+    },
+    {
+      icon: EnvelopeIcon,
+      title: 'Email',
+      content: contactInfo.email,
+      description: 'Пишите нам на почту',
+      color: 'from-purple-500 to-purple-600',
+      bgColor: 'from-purple-50 to-purple-100'
+    }
+  ];
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut"
+      }
+    }
+  };
+
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-white via-secondary-50 to-white pt-20">
       {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-blue-900 to-blue-800" />
+      <section className="hero relative overflow-hidden">
+        <div className="hero-pattern"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-500/20 via-accent-500/20 to-primary-600/20"></div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
+        <div className="container relative z-10">
+          <motion.div 
+            className="hero-content text-center"
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center max-w-3xl mx-auto"
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="inline-flex items-center px-6 py-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium mb-8"
+            >
+              <ChatBubbleLeftRightIcon className="w-4 h-4 mr-3" />
               Свяжитесь с нами
+            </motion.div>
+
+            <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
+              <span className="bg-gradient-to-r from-white to-primary-100 bg-clip-text text-transparent">
+                Давайте обсудим
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-primary-100 via-white to-accent-100 bg-clip-text text-transparent">
+                ваши планы
+              </span>
             </h1>
-            <p className="text-xl text-blue-100">
-              У вас есть вопросы или предложения? Мы всегда рады общению!
+            <p className="text-xl md:text-2xl text-primary-100 max-w-4xl mx-auto leading-relaxed">
+              У вас есть вопросы или предложения? Мы всегда рады общению и готовы помочь!
             </p>
           </motion.div>
         </div>
       </section>
 
       {/* Contact Section */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <section className="section">
+        <div className="container">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             {/* Contact Information */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
             >
-              <h2 className="text-3xl font-bold text-gray-900 mb-8">
-                Контактная информация
-              </h2>
+              <motion.div variants={itemVariants} className="mb-12">
+                <h2 className="text-4xl font-bold text-secondary-900 mb-6">
+                  Контактная информация
+                </h2>
+                <p className="text-xl text-secondary-600 leading-relaxed">
+                  Свяжитесь с нами любым удобным способом. Мы ответим в кратчайшие сроки.
+                </p>
+              </motion.div>
               
               <div className="space-y-8">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <MapPinIcon className="w-6 h-6 text-blue-800" />
-                    </div>
-                  </div>
-                  <div className="ml-4">
-                    <h3 className="text-lg font-medium text-gray-900">
-                      Адрес
-                    </h3>
-                    <p className="mt-1 text-gray-600">
-                      г. Москва, ул. Мотоциклетная, д. 1
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start">
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <PhoneIcon className="w-6 h-6 text-blue-800" />
-                    </div>
-                  </div>
-                  <div className="ml-4">
-                    <h3 className="text-lg font-medium text-gray-900">
-                      Телефон
-                    </h3>
-                    <p className="mt-1 text-gray-600">
-                      +7 (999) 123-45-67
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start">
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <EnvelopeIcon className="w-6 h-6 text-blue-800" />
-                    </div>
-                  </div>
-                  <div className="ml-4">
-                    <h3 className="text-lg font-medium text-gray-900">
-                      Email
-                    </h3>
-                    <p className="mt-1 text-gray-600">
-                      info@bikeunity.ru
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-12">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
-                  Мы в социальных сетях
-                </h3>
-                <div className="flex space-x-4">
-                  <a
-                    href="https://vk.com/bikeunity"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-600 hover:text-blue-800"
+                {contactInfoItems.map((info) => (
+                  <motion.div
+                    key={info.title}
+                    variants={itemVariants}
+                    className="contact-info-item"
+                    whileHover={{ x: 10 }}
                   >
-                    VK
-                  </a>
-                  <a
-                    href="https://t.me/bikeunity"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-600 hover:text-blue-800"
-                  >
-                    Telegram
-                  </a>
-                  <a
-                    href="https://instagram.com/bikeunity"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-600 hover:text-blue-800"
-                  >
-                    Instagram
-                  </a>
-                </div>
-              </div>
-
-              {/* Map Placeholder */}
-              <div className="mt-12 aspect-w-16 aspect-h-9 rounded-xl overflow-hidden bg-gray-100">
-                <div className="w-full h-full flex items-center justify-center text-gray-500">
-                  Карта будет добавлена позже
-                </div>
+                    <div className={`icon-wrapper bg-gradient-to-br ${info.bgColor} ${info.color.replace('from-', 'text-').replace(' to-', '-')}`}>
+                      <info.icon className="h-6 w-6" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-secondary-900 mb-2">
+                        {info.title}
+                      </h3>
+                      <p className="text-lg font-semibold text-primary-600 mb-1">
+                        {info.content}
+                      </p>
+                      <p className="text-secondary-600">
+                        {info.description}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             </motion.div>
 
             {/* Contact Form */}
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
             >
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Ваше имя
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-800 focus:ring-blue-800"
-                  />
+              <motion.div variants={itemVariants} className="mb-8">
+                <h2 className="text-4xl font-bold text-secondary-900 mb-6">
+                  Напишите нам
+                </h2>
+                <p className="text-xl text-secondary-600 leading-relaxed">
+                  Заполните форму ниже, и мы свяжемся с вами в ближайшее время.
+                </p>
+              </motion.div>
+
+              <motion.form
+                variants={itemVariants}
+                onSubmit={handleSubmit}
+                className="space-y-6"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label htmlFor="name" className="form-label">
+                      Имя *
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className="input"
+                      placeholder="Ваше имя"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="form-label">
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="input"
+                      placeholder="your@email.com"
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-800 focus:ring-blue-800"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="subject"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Тема
+                  <label htmlFor="subject" className="form-label">
+                    Тема *
                   </label>
                   <input
                     type="text"
@@ -221,39 +251,74 @@ export default function Contact() {
                     value={formData.subject}
                     onChange={handleChange}
                     required
-                    className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-800 focus:ring-blue-800"
+                    className="input"
+                    placeholder="Тема сообщения"
                   />
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Сообщение
+                  <label htmlFor="message" className="form-label">
+                    Сообщение *
                   </label>
                   <textarea
                     id="message"
                     name="message"
-                    rows={6}
                     value={formData.message}
                     onChange={handleChange}
                     required
-                    className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-800 focus:ring-blue-800"
+                    rows={6}
+                    className="input"
+                    placeholder="Ваше сообщение..."
                   />
                 </div>
 
-                <button
+                <motion.button
                   type="submit"
-                  className="w-full btn-primary text-lg px-8 py-3"
+                  disabled={isSubmitting}
+                  className="btn-primary w-full text-lg py-4"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  Отправить сообщение
-                </button>
-              </form>
+                  {isSubmitting ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
+                      Отправка...
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center">
+                      <PaperAirplaneIcon className="w-5 h-5 mr-3" />
+                      Отправить сообщение
+                    </div>
+                  )}
+                </motion.button>
+              </motion.form>
             </motion.div>
           </div>
         </div>
       </section>
+
+      {/* Success Notification */}
+      <AnimatePresence>
+        {submitSuccess && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-8 right-8 bg-green-500 text-white px-6 py-4 rounded-xl shadow-lg z-50"
+          >
+            <div className="flex items-center">
+              <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center mr-3">
+                <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <span className="font-semibold">Сообщение отправлено!</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
-} 
+};
+
+export default Contact; 

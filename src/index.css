@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -10,41 +10,53 @@
   }
 
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply bg-white text-secondary-700 antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display font-bold tracking-tight;
+    @apply font-display font-bold tracking-tight text-secondary-900;
   }
 }
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-105 active:scale-95;
   }
 
   .btn-primary {
-    @apply btn bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+    @apply btn bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 focus:ring-primary-400 shadow-lg hover:shadow-xl hover:shadow-primary-500/25;
   }
 
   .btn-secondary {
-    @apply btn bg-secondary-100 text-secondary-900 hover:bg-secondary-200 focus:ring-secondary-500;
+    @apply btn bg-gradient-to-r from-secondary-100 to-secondary-200 text-secondary-700 hover:from-secondary-200 hover:to-secondary-300 focus:ring-secondary-300 border border-secondary-200 shadow-md hover:shadow-lg;
   }
 
   .btn-accent {
-    @apply btn bg-accent-500 text-white hover:bg-accent-600 focus:ring-accent-400;
+    @apply btn bg-gradient-to-r from-accent-500 to-accent-600 text-white hover:from-accent-600 hover:to-accent-700 focus:ring-accent-400 shadow-lg hover:shadow-xl hover:shadow-accent-500/25;
+  }
+
+  .btn-outline {
+    @apply btn bg-transparent border-2 border-primary-500 text-primary-600 hover:bg-primary-500 hover:text-white focus:ring-primary-400;
   }
 
   .card {
-    @apply bg-white rounded-xl shadow-soft hover:shadow-hover transition-shadow duration-200;
+    @apply bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-secondary-100/50 backdrop-blur-sm;
+  }
+
+  .card-hover {
+    @apply card hover:-translate-y-2 hover:shadow-primary-500/10;
+  }
+
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl;
   }
 
   .input {
-    @apply block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500;
+    @apply block w-full rounded-xl border-secondary-200 shadow-sm focus:border-primary-400 focus:ring-primary-400 bg-white/80 backdrop-blur-sm transition-all duration-300;
   }
 
   .section {
-    @apply py-16 md:py-24;
+    @apply py-20 md:py-32;
   }
 
   .container {
@@ -52,7 +64,7 @@
   }
 
   .hero {
-    @apply relative py-20 overflow-hidden bg-gradient-to-br from-primary-900 to-primary-700 text-white;
+    @apply relative py-20 overflow-hidden bg-gradient-to-br from-primary-400 via-primary-500 to-accent-500 text-white;
   }
 
   .hero-content {
@@ -65,50 +77,86 @@
   }
 
   .nav-link {
-    @apply text-gray-600 hover:text-primary-600 transition-colors duration-200;
+    @apply text-secondary-600 hover:text-primary-600 transition-all duration-300 font-medium;
   }
 
   .nav-link-active {
-    @apply text-primary-600 font-medium;
+    @apply text-primary-600 font-semibold;
   }
 
   .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold;
   }
 
   .badge-primary {
-    @apply badge bg-primary-100 text-primary-800;
+    @apply badge bg-gradient-to-r from-primary-100 to-primary-200 text-primary-700;
   }
 
   .badge-secondary {
-    @apply badge bg-secondary-100 text-secondary-800;
+    @apply badge bg-gradient-to-r from-secondary-100 to-secondary-200 text-secondary-700;
   }
 
   .badge-accent {
-    @apply badge bg-accent-100 text-accent-800;
+    @apply badge bg-gradient-to-r from-accent-100 to-accent-200 text-accent-700;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-600 via-accent-500 to-primary-700 bg-clip-text text-transparent;
+  }
+
+  .gradient-bg {
+    @apply bg-gradient-to-br from-primary-50 via-white to-accent-50;
+  }
+
+  .gradient-border {
+    @apply border border-transparent bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-border;
   }
 }
 
 /* Анимации */
 .animate-fade-in {
-  animation: fadeIn 0.5s ease-in-out;
+  animation: fadeIn 0.6s ease-out;
 }
 
 .animate-slide-up {
-  animation: slideUp 0.5s ease-out;
+  animation: slideUp 0.6s ease-out;
 }
 
 .animate-slide-down {
-  animation: slideDown 0.5s ease-out;
+  animation: slideDown 0.6s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 /* Кастомные стили для форм */
 .form-group {
-  @apply space-y-1;
+  @apply space-y-2;
 }
 
 .form-label {
-  @apply block text-sm font-medium text-gray-700;
+  @apply block text-sm font-semibold text-secondary-700;
 }
 
 .form-error {
@@ -117,7 +165,7 @@
 
 /* Стили для карточек событий и маршрутов */
 .event-card, .route-card {
-  @apply card overflow-hidden;
+  @apply card-hover overflow-hidden bg-white;
 }
 
 .event-card-image, .route-card-image {
@@ -125,16 +173,16 @@
 }
 
 .event-card-content, .route-card-content {
-  @apply p-6;
+  @apply p-8;
 }
 
 /* Стили для команды */
 .team-member-card {
-  @apply card text-center;
+  @apply card-hover text-center bg-white p-8;
 }
 
 .team-member-image {
-  @apply aspect-w-1 aspect-h-1 rounded-full overflow-hidden;
+  @apply aspect-w-1 aspect-h-1 rounded-2xl overflow-hidden mx-auto mb-6;
 }
 
 /* Стили для контактной формы */
@@ -143,37 +191,37 @@
 }
 
 .contact-info {
-  @apply space-y-4;
+  @apply space-y-6;
 }
 
 .contact-info-item {
-  @apply flex items-center space-x-3 text-gray-600;
+  @apply flex items-center space-x-4 text-secondary-600 p-4 rounded-xl bg-white/50 backdrop-blur-sm;
 }
 
 /* Стили для футера */
 .footer {
-  @apply bg-gray-900 text-gray-300;
+  @apply bg-gradient-to-br from-secondary-50 via-white to-secondary-100 text-secondary-700;
 }
 
 .footer-content {
-  @apply grid grid-cols-1 md:grid-cols-4 gap-8;
+  @apply grid grid-cols-1 md:grid-cols-4 gap-12;
 }
 
 .footer-section {
-  @apply space-y-4;
+  @apply space-y-6;
 }
 
 .footer-link {
-  @apply text-gray-400 hover:text-white transition-colors duration-200;
+  @apply text-secondary-600 hover:text-primary-600 transition-all duration-300 hover:translate-x-1;
 }
 
 /* Стили для навигации */
 .navbar {
-  @apply bg-white shadow-sm;
+  @apply bg-white/95 backdrop-blur-md shadow-lg border-b border-secondary-100/50;
 }
 
 .navbar-container {
-  @apply container flex items-center justify-between h-16;
+  @apply container flex items-center justify-between h-20;
 }
 
 .navbar-menu {
@@ -186,218 +234,103 @@
 
 /* Стили для кнопок фильтрации */
 .filter-button {
-  @apply px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200;
+  @apply px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 transform hover:scale-105;
 }
 
 .filter-button-active {
-  @apply bg-primary-100 text-primary-800;
+  @apply bg-gradient-to-r from-primary-100 to-primary-200 text-primary-700 shadow-lg;
 }
 
 .filter-button-inactive {
-  @apply text-gray-600 hover:bg-gray-100;
+  @apply text-secondary-600 hover:bg-secondary-100 hover:text-secondary-900;
 }
 
-/* --- Глобальные анимации и эффекты --- */
-
-/* Спиннер */
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-.spinner {
-  border: 5px solid #f3f3f3;
-  border-top: 5px solid #3498db;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 1s linear infinite;
+/* Стили для статистики */
+.stats-card {
+  @apply card-hover text-center p-8 bg-gradient-to-br from-white to-secondary-50;
 }
 
-/* Прогресс-бар */
-@keyframes progress {
-  0% { width: 0; }
-  100% { width: 100%; }
+.stats-number {
+  @apply text-4xl md:text-5xl font-bold gradient-text mb-2;
 }
+
+.stats-label {
+  @apply text-secondary-600 font-medium;
+}
+
+/* Стили для галереи */
+.gallery-item {
+  @apply card-hover overflow-hidden cursor-pointer;
+}
+
+.gallery-image {
+  @apply aspect-w-4 aspect-h-3 object-cover transition-transform duration-500 group-hover:scale-110;
+}
+
+/* Стили для модальных окон */
+.modal-overlay {
+  @apply fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4;
+}
+
+.modal-content {
+  @apply bg-white rounded-3xl shadow-2xl max-w-4xl max-h-full overflow-hidden;
+}
+
+/* Стили для разделителей */
+.section-divider {
+  @apply relative py-20;
+}
+
+.section-divider::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-r from-transparent via-secondary-100 to-transparent;
+}
+
+/* Стили для иконок */
+.icon-wrapper {
+  @apply inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 text-primary-600;
+}
+
+/* Стили для прогресс-баров */
 .progress-bar {
-  height: 4px;
-  background: linear-gradient(90deg, #3498db, #8e44ad);
-  animation: progress 2s cubic-bezier(0.4,0,0.2,1) forwards;
+  @apply w-full bg-secondary-200 rounded-full h-2 overflow-hidden;
 }
 
-/* Плавное появление */
-@keyframes fadeInUp {
-  0% { opacity: 0; transform: translateY(40px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-.fade-in-up {
-  animation: fadeInUp 0.8s cubic-bezier(0.4,0,0.2,1) both;
+.progress-fill {
+  @apply h-full bg-gradient-to-r from-primary-500 to-accent-500 rounded-full transition-all duration-500;
 }
 
-/* Ховер-сдвиг */
-.hover\:translate-x-2:hover {
-  transform: translateX(0.5rem);
+/* Стили для уведомлений */
+.notification {
+  @apply fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg backdrop-blur-md border border-white/20;
 }
 
-/* Кнопки: плавный градиент и тень */
-.btn-animated {
-  transition: background 0.4s, box-shadow 0.3s, transform 0.2s;
-  box-shadow: 0 2px 8px rgba(52,152,219,0.15);
-}
-.btn-animated:hover {
-  background: linear-gradient(90deg, #3498db, #8e44ad);
-  color: #fff;
-  transform: scale(1.05) translateY(-2px);
-  box-shadow: 0 4px 16px rgba(52,152,219,0.25);
+.notification-success {
+  @apply notification bg-green-500/90 text-white;
 }
 
-/* Цветовой фильтр для изображений */
-.img-bw {
-  filter: grayscale(1);
-  transition: filter 0.4s;
-}
-.img-bw:hover {
-  filter: grayscale(0) drop-shadow(0 2px 8px #8e44ad44);
+.notification-error {
+  @apply notification bg-red-500/90 text-white;
 }
 
-/* Поля формы: анимация фокуса */
-.input-animated {
-  background: #f7fafc;
-  transition: background 0.3s, border 0.3s;
-  border-bottom: 2px solid transparent;
-}
-.input-animated:focus {
-  background: #fff;
-  border-bottom: 2px solid #3498db;
-  outline: none;
+/* Стили для загрузки */
+.loading-spinner {
+  @apply w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin;
 }
 
-/* Стили для страницы Safety (загрузка) */
-.loading-page {
-  background: #1d1d1d;
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+/* Стили для скроллбара */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-.pac-man-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 20px;
+::-webkit-scrollbar-track {
+  @apply bg-secondary-100;
 }
 
-.pac-man {
-  border-radius: 50%;
-  width: 70px;
-  height: 35px;
-  background: #fed75a;
-  position: relative;
-  transform-origin: bottom;
-  animation: eating-top 0.5s infinite;
+::-webkit-scrollbar-thumb {
+  @apply bg-gradient-to-b from-primary-400 to-primary-600 rounded-full;
 }
 
-.pac-man::before {
-  content: '';
-  display: block;
-  width: 70px;
-  height: 35px;
-  background: #fed75a;
-  margin-top: 35px;
-  position: absolute;
-  transform-origin: top;
-  border-radius: 0 0 100em 100em;
-  transform: rotate(80deg);
-  animation: eating-bottom 0.5s infinite;
-}
-
-.pac-man::after {
-  position: absolute;
-  border-radius: 100em;
-  content: '';
-  display: block;
-  height: 20px;
-  width: 20px;
-  margin-top: 25px;
-  margin-left: 25px;
-  transform-origin: center;
-  animation: center 0.5s infinite, ball 0.5s -0.33s infinite linear;
-}
-
-.loading-text {
-  display: flex;
-  gap: 10px;
-  font-size: 24px;
-  font-weight: bold;
-  color: #fed75a;
-}
-
-.letter {
-  opacity: 0.7;
-  animation: letter-eaten 0.5s -0.33s infinite linear;
-}
-
-@keyframes eating-top {
-  0% { transform: rotate(-40deg); }
-  50% { transform: rotate(0deg); }
-  100% { transform: rotate(-40deg); }
-}
-
-@keyframes eating-bottom {
-  0% { transform: rotate(80deg); }
-  50% { transform: rotate(0deg); }
-  100% { transform: rotate(80deg); }
-}
-
-@keyframes center {
-  0% { transform: rotate(40deg); }
-  50% { transform: rotate(0deg); }
-  100% { transform: rotate(40deg); }
-}
-
-@keyframes ball {
-  0% { 
-    opacity: 0.7;
-    box-shadow: 
-      70px 0 0 0 #fed75a,
-      120px 0 0 0 #fed75a,
-      170px 0 0 0 #fed75a,
-      220px 0 0 0 #fed75a
-    ;
-  }
-  100% { 
-    box-shadow: 
-      20px 0 0 0 #fed75a,
-      70px 0 0 0 #fed75a,
-      120px 0 0 0 #fed75a,
-      170px 0 0 0 #fed75a
-    ;
-  }
-}
-
-@keyframes letter-eaten {
-  0% { 
-    opacity: 0.7;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.3;
-    transform: scale(0.8);
-  }
-  100% { 
-    opacity: 0.7;
-    transform: scale(1);
-  }
-}
-
-/* Анимация для каждой буквы с задержкой */
-.letter:nth-child(1) { animation-delay: 0s; }
-.letter:nth-child(2) { animation-delay: 0.1s; }
-.letter:nth-child(3) { animation-delay: 0.2s; }
-.letter:nth-child(4) { animation-delay: 0.3s; }
-.letter:nth-child(5) { animation-delay: 0.4s; }
-.letter:nth-child(6) { animation-delay: 0.5s; }
-.letter:nth-child(7) { animation-delay: 0.6s; }
-.letter:nth-child(8) { animation-delay: 0.7s; } 
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gradient-to-b from-primary-500 to-primary-700;
+} 

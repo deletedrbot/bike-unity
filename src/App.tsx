@@ -5,11 +5,13 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import About from './pages/About';
 import Events from './pages/Events';
+import EventDetail from './pages/EventDetail';
 import RoutesPage from './pages/Routes';
 import Team from './pages/Team';
 import Contact from './pages/Contact';
 import Safety from './pages/Safety';
 import Gallery from './pages/Gallery';
+import Register from './pages/Register';
 
 const App: React.FC = () => {
   return (
@@ -23,10 +25,12 @@ const App: React.FC = () => {
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/events" element={<Events />} />
+              <Route path="/events/:id" element={<EventDetail />} />
               <Route path="/routes" element={<RoutesPage />} />
               <Route path="/team" element={<Team />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/gallery" element={<Gallery />} />
+              <Route path="/register" element={<Register />} />
             </Routes>
           </main>
           <Footer />
