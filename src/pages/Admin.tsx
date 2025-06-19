@@ -134,11 +134,6 @@ const Admin: React.FC = () => {
     }
   };
 
-  const handleAddRoute = () => {
-    setEditingRoute(null);
-    setShowRouteEditor(true);
-  };
-
   const handleEditRoute = (route: BikeRoute) => {
     setEditingRoute(route);
     setShowRouteEditor(true);

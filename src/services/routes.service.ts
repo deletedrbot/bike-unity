@@ -45,7 +45,7 @@ const RoutesService = {
     // Handle basic fields
     Object.entries(routeData).forEach(([key, value]) => {
       if (key === 'imageFiles' && Array.isArray(value)) {
-        value.forEach((file, index) => {
+        value.forEach((file) => {
           if (file instanceof File) {
             formData.append(`images`, file);
           }
@@ -72,7 +72,7 @@ const RoutesService = {
     
     Object.entries(routeData).forEach(([key, value]) => {
       if (key === 'imageFiles' && Array.isArray(value)) {
-        value.forEach((file, index) => {
+        value.forEach((file) => {
           if (file instanceof File) {
             formData.append(`images`, file);
           }

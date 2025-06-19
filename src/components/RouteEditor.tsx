@@ -2,12 +2,11 @@ import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   XMarkIcon,
-  PhotoIcon,
   MapIcon,
-  ArrowPathIcon,
+  ArrowUpTrayIcon,
   TagIcon,
 } from '@heroicons/react/24/outline';
-import { BikeRoute, RouteCreateInput, RoutePoint } from '../services/routes.service';
+import { BikeRoute, RouteCreateInput } from '../services/routes.service';
 
 interface RouteEditorProps {
   isOpen: boolean;
@@ -279,7 +278,7 @@ const RouteEditor: React.FC<RouteEditorProps> = ({ isOpen, onClose, mode, initia
               <p className="text-gray-600">
                 {isProcessingGpx ? (
                   <span className="flex items-center justify-center gap-2">
-                    <ArrowPathIcon className="h-5 w-5 animate-spin" />
+                    <ArrowUpTrayIcon className="h-5 w-5 animate-spin" />
                     Обработка GPX файла...
                   </span>
                 ) : (
@@ -333,7 +332,7 @@ const RouteEditor: React.FC<RouteEditorProps> = ({ isOpen, onClose, mode, initia
                   isUploading ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
-                <PhotoIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <ArrowUpTrayIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-600">
                   {isUploading ? 'Загрузка...' : 'Нажмите для загрузки фотографий'}
                 </p>

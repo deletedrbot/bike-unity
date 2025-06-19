@@ -2,11 +2,10 @@ import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   XMarkIcon,
-  PhotoIcon,
   ArrowUpTrayIcon,
   TagIcon,
 } from '@heroicons/react/24/outline';
-import { GalleryImage, GalleryCreateInput } from '../services/gallery.service';
+import { GalleryCreateInput } from '../services/gallery.service';
 
 interface GalleryManagerProps {
   isOpen: boolean;
