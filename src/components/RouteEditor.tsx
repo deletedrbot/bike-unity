@@ -7,7 +7,7 @@ import {
   ArrowPathIcon,
   TagIcon,
 } from '@heroicons/react/24/outline';
-import { BikeRoute, RouteCreateInput, RoutePoint } from '../services/routes.service';
+import { BikeRoute, RouteCreateInput } from '../services/routes.service';
 
 interface RouteEditorProps {
   isOpen: boolean;

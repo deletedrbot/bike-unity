@@ -34,7 +34,7 @@ const Admin: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isLoading, setIsLoading] = useState(true);
   const [showNewsEditor, setShowNewsEditor] = useState(false);
-  const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
+  const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [stats, setStats] = useState<AdminStats>({
     totalNews: 0,
@@ -94,12 +94,12 @@ const Admin: React.FC = () => {
   ];
 
   const handleAddNews = () => {
-    setEditingNews(null);
+    setSelectedNews(null);
     setShowNewsEditor(true);
   };
 
   const handleEditNews = (news: NewsItem) => {
-    setEditingNews(news);
+    setSelectedNews(news);
     setShowNewsEditor(true);
   };
 
@@ -117,26 +117,21 @@ const Admin: React.FC = () => {
 
   const handleNewsSave = async (newsData: NewsCreateInput) => {
     try {
-      if (editingNews) {
-        const updated = await NewsService.update(editingNews.id, newsData);
+      if (selectedNews) {
+        const updated = await NewsService.update(selectedNews.id, newsData);
         setNewsItems(prev => prev.map(item => 
-          item.id === editingNews.id ? updated : item
+          item.id === selectedNews.id ? updated : item
         ));
       } else {
         const created = await NewsService.create(newsData);
         setNewsItems(prev => [...prev, created]);
       }
       setShowNewsEditor(false);
-      setEditingNews(null);
+      setSelectedNews(null);
     } catch (error) {
       console.error('Error saving news:', error);
       // TODO: Add error handling
     }
-  };
-
-  const handleAddRoute = () => {
-    setEditingRoute(null);
-    setShowRouteEditor(true);
   };
 
   const handleEditRoute = (route: BikeRoute) => {
@@ -641,10 +636,10 @@ const Admin: React.FC = () => {
           isOpen={showNewsEditor}
           onClose={() => {
             setShowNewsEditor(false);
-            setEditingNews(null);
+            setSelectedNews(null);
           }}
-          mode={editingNews ? 'edit' : 'add'}
-          initialData={editingNews}
+          mode={selectedNews ? 'edit' : 'add'}
+          initialData={selectedNews}
           onSave={handleNewsSave}
         />
       )}
