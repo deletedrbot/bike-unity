@@ -14,12 +14,19 @@ import Safety from './pages/Safety';
 import Gallery from './pages/Gallery';
 import Register from './pages/Register';
 import Admin from './pages/Admin';
+import Login from './pages/Login';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const App: React.FC = () => {
   return (
     <Routes>
+      <Route path="/login" element={<Login />} />
       <Route path="/safety" element={<Safety />} />
-      <Route path="/admin" element={<Admin />} />
+      <Route path="/admin" element={
+        <ProtectedRoute>
+          <Admin />
+        </ProtectedRoute>
+      } />
       <Route path="/*" element={
         <div className="min-h-screen flex flex-col">
           <Navbar />

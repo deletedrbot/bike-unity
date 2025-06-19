@@ -8,16 +8,18 @@ import {
   UserGroupIcon,
   TagIcon,
 } from '@heroicons/react/24/outline';
+import { NewsItem, NewsCreateInput } from '../services/news.service';
 
 interface NewsEditorProps {
   isOpen: boolean;
   onClose: () => void;
   mode: 'add' | 'edit';
-  initialData?: any;
+  initialData?: NewsItem | null;
+  onSave: (data: NewsCreateInput) => Promise<void>;
 }
 
-const NewsEditor: React.FC<NewsEditorProps> = ({ isOpen, onClose, mode, initialData }) => {
-  const [formData, setFormData] = useState({
+const NewsEditor: React.FC<NewsEditorProps> = ({ isOpen, onClose, mode, initialData, onSave }) => {
+  const [formData, setFormData] = useState<NewsCreateInput>({
     title: initialData?.title || '',
     content: initialData?.content || '',
     excerpt: initialData?.excerpt || '',
@@ -26,14 +28,16 @@ const NewsEditor: React.FC<NewsEditorProps> = ({ isOpen, onClose, mode, initialD
     category: initialData?.category || 'Новости',
     type: initialData?.type || 'news',
     location: initialData?.location || '',
-    participants: initialData?.participants || '',
+    participants: initialData?.participants || 0,
     difficulty: initialData?.difficulty || '',
-    tags: initialData?.tags?.join(', ') || '',
+    tags: initialData?.tags || [],
     featured: initialData?.featured || false,
+    image: initialData?.image || '',
   });
 
   const [imagePreview, setImagePreview] = useState<string | null>(initialData?.image || null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -48,8 +52,12 @@ const NewsEditor: React.FC<NewsEditorProps> = ({ isOpen, onClose, mode, initialD
     const file = e.target.files?.[0];
     if (file) {
       setIsUploading(true);
+      setFormData(prev => ({
+        ...prev,
+        imageFile: file
+      }));
       
-      // Simulate file upload
+      // Preview image
       const reader = new FileReader();
       reader.onload = (e) => {
         setImagePreview(e.target?.result as string);
@@ -59,17 +67,22 @@ const NewsEditor: React.FC<NewsEditorProps> = ({ isOpen, onClose, mode, initialD
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the data to your backend
-    console.log('Form data:', formData);
-    console.log('Image preview:', imagePreview);
-    
-    // Simulate API call
-    setTimeout(() => {
-      alert(mode === 'add' ? 'Новость добавлена!' : 'Новость обновлена!');
+    setIsSubmitting(true);
+
+    try {
+      await onSave({
+        ...formData,
+        tags: Array.isArray(formData.tags) ? formData.tags : (formData.tags as string).split(',').map((tag: string) => tag.trim()),
+      });
       onClose();
-    }, 1000);
+    } catch (error) {
+      console.error('Error saving news:', error);
+      // TODO: Add error handling
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -283,7 +296,7 @@ const NewsEditor: React.FC<NewsEditorProps> = ({ isOpen, onClose, mode, initialD
               <input
                 type="text"
                 name="tags"
-                value={formData.tags}
+                value={typeof formData.tags === 'string' ? formData.tags : formData.tags.join(', ')}
                 onChange={handleInputChange}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 placeholder="тег1, тег2, тег3"
@@ -309,7 +322,10 @@ const NewsEditor: React.FC<NewsEditorProps> = ({ isOpen, onClose, mode, initialD
                   />
                   <button
                     type="button"
-                    onClick={() => setImagePreview(null)}
+                    onClick={() => {
+                      setImagePreview(null);
+                      setFormData(prev => ({ ...prev, imageFile: undefined }));
+                    }}
                     className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
                   >
                     <XMarkIcon className="h-4 w-4" />
@@ -363,14 +379,16 @@ const NewsEditor: React.FC<NewsEditorProps> = ({ isOpen, onClose, mode, initialD
               type="button"
               onClick={onClose}
               className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              disabled={isSubmitting}
             >
               Отмена
             </button>
             <button
               type="submit"
-              className="btn-primary px-6 py-3"
+              className={`btn-primary px-6 py-3 ${isSubmitting ? 'opacity-75 cursor-not-allowed' : ''}`}
+              disabled={isSubmitting}
             >
-              {mode === 'add' ? 'Добавить' : 'Сохранить'}
+              {isSubmitting ? 'Сохранение...' : mode === 'add' ? 'Добавить' : 'Сохранить'}
             </button>
           </div>
         </form>

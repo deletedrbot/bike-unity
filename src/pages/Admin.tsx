@@ -16,24 +16,11 @@ import {
   BellIcon,
 } from '@heroicons/react/24/outline';
 import NewsEditor from '../components/NewsEditor';
-
-interface NewsItem {
-  id: number;
-  title: string;
-  content: string;
-  excerpt: string;
-  author: string;
-  date: string;
-  category: 'События' | 'Новости' | 'Объявления' | 'Отчеты';
-  image: string;
-  views: number;
-  tags: string[];
-  featured?: boolean;
-  type: 'news' | 'event';
-  location?: string;
-  participants?: number;
-  difficulty?: string;
-}
+import NewsService, { NewsItem, NewsCreateInput } from '../services/news.service';
+import RoutesService, { BikeRoute, RouteCreateInput } from '../services/routes.service';
+import RouteEditor from '../components/RouteEditor';
+import GalleryManager from '../components/GalleryManager';
+import GalleryService, { GalleryCreateInput, GalleryImage } from '../services/gallery.service';
 
 interface AdminStats {
   totalNews: number;
@@ -48,69 +35,53 @@ const Admin: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showNewsEditor, setShowNewsEditor] = useState(false);
   const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
-  const [newsItems, setNewsItems] = useState<NewsItem[]>([
-    {
-      id: 1,
-      title: 'Весенний велопробег',
-      content: 'Приглашаем всех желающих на традиционный весенний велопробег!',
-      excerpt: 'Традиционный весенний велопробег для всех желающих',
-      author: 'Команда Bike Unity',
-      date: '2024-04-15',
-      category: 'События',
-      image: '/images/event-1.jpg',
-      views: 245,
-      tags: ['велопробег', 'весна', 'парк'],
-      featured: true,
-      type: 'event',
-      location: 'Центральный парк Читы',
-      participants: 25,
-      difficulty: 'Начинающий'
-    },
-    {
-      id: 2,
-      title: 'Открытие нового сезона',
-      content: 'Мы рады объявить о начале нового сезона велопрогулок!',
-      excerpt: 'Начинается новый сезон велопрогулок с множеством интересных маршрутов',
-      author: 'Команда Bike Unity',
-      date: '2024-04-15',
-      category: 'Новости',
-      image: '/images/news-season-opening.jpg',
-      views: 245,
-      tags: ['сезон', 'открытие', 'маршруты'],
-      featured: true,
-      type: 'news'
-    },
-    {
-      id: 3,
-      title: 'Новый маршрут: "Читинские холмы"',
-      content: 'Представляем вашему вниманию новый маршрут "Читинские холмы"',
-      excerpt: 'Добавлен новый маршрут для райдеров среднего уровня',
-      author: 'Дмитрий Смирнов',
-      date: '2024-04-10',
-      category: 'Новости',
-      image: '/images/news-new-route.jpg',
-      views: 189,
-      tags: ['маршрут', 'холмы', 'средний уровень'],
-      type: 'news'
-    }
-  ]);
+  const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
+  const [stats, setStats] = useState<AdminStats>({
+    totalNews: 0,
+    totalEvents: 0,
+    totalRoutes: 0,
+    totalTeamMembers: 0,
+    recentActivity: []
+  });
+  const [showRouteEditor, setShowRouteEditor] = useState(false);
+  const [showGalleryManager, setShowGalleryManager] = useState(false);
+  const [editingRoute, setEditingRoute] = useState<BikeRoute | null>(null);
+  const [routes, setRoutes] = useState<BikeRoute[]>([]);
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(timer);
+    loadData();
   }, []);
 
-  const stats: AdminStats = {
-    totalNews: newsItems.filter(item => item.type === 'news').length,
-    totalEvents: newsItems.filter(item => item.type === 'event').length,
-    totalRoutes: 3,
-    totalTeamMembers: 4,
-    recentActivity: [
-      'Добавлена новость "Открытие нового сезона"',
-      'Обновлено событие "Весенний велопробег"',
-      'Загружены новые фотографии в галерею',
-      'Добавлен новый маршрут "Читинские холмы"'
-    ]
+  const loadData = async () => {
+    try {
+      const [news, routes, gallery] = await Promise.all([
+        NewsService.getAll(),
+        RoutesService.getAll(),
+        GalleryService.getAll()
+      ]);
+
+      setNewsItems(news);
+      setRoutes(routes);
+      setGalleryImages(gallery);
+      setStats({
+        totalNews: news.filter((item: NewsItem) => item.type === 'news').length,
+        totalEvents: news.filter((item: NewsItem) => item.type === 'event').length,
+        totalRoutes: routes.length,
+        totalTeamMembers: 4, // TODO: Add team service
+        recentActivity: [
+          'Добавлена новость "Открытие нового сезона"',
+          'Обновлено событие "Весенний велопробег"',
+          'Загружены новые фотографии в галерею',
+          'Добавлен новый маршрут "Читинские холмы"'
+        ]
+      });
+    } catch (error) {
+      console.error('Error loading data:', error);
+      // TODO: Add error handling
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const tabs = [
@@ -132,33 +103,111 @@ const Admin: React.FC = () => {
     setShowNewsEditor(true);
   };
 
-  const handleDeleteNews = (id: number) => {
+  const handleDeleteNews = async (id: number) => {
     if (window.confirm('Вы уверены, что хотите удалить эту новость?')) {
-      setNewsItems(prev => prev.filter(item => item.id !== id));
+      try {
+        await NewsService.delete(id);
+        setNewsItems(prev => prev.filter(item => item.id !== id));
+      } catch (error) {
+        console.error('Error deleting news:', error);
+        // TODO: Add error handling
+      }
     }
   };
 
-  // const handleNewsSave = (newsData: any) => {
-  //   if (editingNews) {
-  //     // Edit existing news
-  //     setNewsItems(prev => prev.map(item => 
-  //       item.id === editingNews.id 
-  //         ? { ...item, ...newsData, id: item.id }
-  //         : item
-  //     ));
-  //   } else {
-  //     // Add new news
-  //     const newNews: NewsItem = {
-  //       ...newsData,
-  //       id: Math.max(...newsItems.map(item => item.id)) + 1,
-  //       views: 0,
-  //       tags: newsData.tags ? newsData.tags.split(',').map((tag: string) => tag.trim()) : []
-  //     };
-  //     setNewsItems(prev => [...prev, newNews]);
-  //   }
-  //   setShowNewsEditor(false);
-  //   setEditingNews(null);
-  // };
+  const handleNewsSave = async (newsData: NewsCreateInput) => {
+    try {
+      if (editingNews) {
+        const updated = await NewsService.update(editingNews.id, newsData);
+        setNewsItems(prev => prev.map(item => 
+          item.id === editingNews.id ? updated : item
+        ));
+      } else {
+        const created = await NewsService.create(newsData);
+        setNewsItems(prev => [...prev, created]);
+      }
+      setShowNewsEditor(false);
+      setEditingNews(null);
+    } catch (error) {
+      console.error('Error saving news:', error);
+      // TODO: Add error handling
+    }
+  };
+
+  const handleAddRoute = () => {
+    setEditingRoute(null);
+    setShowRouteEditor(true);
+  };
+
+  const handleEditRoute = (route: BikeRoute) => {
+    setEditingRoute(route);
+    setShowRouteEditor(true);
+  };
+
+  const handleDeleteRoute = async (id: number) => {
+    if (window.confirm('Вы уверены, что хотите удалить этот маршрут?')) {
+      try {
+        await RoutesService.delete(id);
+        setRoutes(prev => prev.filter(route => route.id !== id));
+      } catch (error) {
+        console.error('Error deleting route:', error);
+        // TODO: Add error handling
+      }
+    }
+  };
+
+  const handleRouteSave = async (routeData: RouteCreateInput) => {
+    try {
+      if (editingRoute) {
+        const updated = await RoutesService.update(editingRoute.id, routeData);
+        setRoutes(prev => prev.map(route => 
+          route.id === editingRoute.id ? updated : route
+        ));
+      } else {
+        const created = await RoutesService.create(routeData);
+        setRoutes(prev => [...prev, created]);
+      }
+      setShowRouteEditor(false);
+      setEditingRoute(null);
+    } catch (error) {
+      console.error('Error saving route:', error);
+      // TODO: Add error handling
+    }
+  };
+
+  const handleGalleryUpload = async (images: GalleryCreateInput[]) => {
+    try {
+      for (const imageData of images) {
+        await GalleryService.create(imageData);
+      }
+      await loadData(); // Refresh all data
+    } catch (error) {
+      console.error('Error uploading images:', error);
+      // TODO: Add error handling
+    }
+  };
+
+  const handleGalleryBulkUpload = async (files: File[]) => {
+    try {
+      await GalleryService.uploadBulk(files);
+      await loadData(); // Refresh all data
+    } catch (error) {
+      console.error('Error uploading images:', error);
+      // TODO: Add error handling
+    }
+  };
+
+  const handleDeleteImage = async (id: number) => {
+    if (window.confirm('Вы уверены, что хотите удалить это изображение?')) {
+      try {
+        await GalleryService.delete(id);
+        setGalleryImages(prev => prev.filter(img => img.id !== id));
+      } catch (error) {
+        console.error('Error deleting image:', error);
+        // TODO: Add error handling
+      }
+    }
+  };
 
   if (isLoading) {
     return (
@@ -399,23 +448,26 @@ const Admin: React.FC = () => {
                   </div>
                   
                   <div className="space-y-4">
-                    {[1, 2, 3].map((item) => (
-                      <div key={item} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                    {routes.map((route) => (
+                      <div key={route.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
                           <div>
-                            <h3 className="font-semibold text-gray-900">Маршрут {item}</h3>
-                            <p className="text-sm text-gray-600">Сложность: Средний</p>
+                            <h3 className="font-semibold text-gray-900">{route.title}</h3>
+                            <p className="text-sm text-gray-600">Сложность: {route.difficulty}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
+                          <button 
+                            onClick={() => handleEditRoute(route)}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                          >
                             <EyeIcon className="h-4 w-4" />
                           </button>
-                          <button className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg">
-                            <PencilIcon className="h-4 w-4" />
-                          </button>
-                          <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
+                          <button 
+                            onClick={() => handleDeleteRoute(route.id)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                          >
                             <TrashIcon className="h-4 w-4" />
                           </button>
                         </div>
@@ -472,28 +524,34 @@ const Admin: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
               >
-                <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-gray-900">Галерея</h2>
-                    <button className="btn-primary">
-                      <PlusIcon className="h-5 w-5 mr-2" />
-                      Загрузить фото
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      Галерея
+                    </h2>
+                    <button
+                      onClick={() => setShowGalleryManager(true)}
+                      className="btn-primary"
+                    >
+                      Загрузить изображения
                     </button>
                   </div>
-                  
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
-                      <div key={item} className="relative group">
-                        <div className="w-full h-32 bg-gray-200 rounded-lg"></div>
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-lg flex items-center justify-center">
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2">
-                            <button className="p-2 bg-white text-gray-700 rounded-lg">
-                              <PencilIcon className="h-4 w-4" />
-                            </button>
-                            <button className="p-2 bg-red-500 text-white rounded-lg">
-                              <TrashIcon className="h-4 w-4" />
-                            </button>
-                          </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {galleryImages.map((image) => (
+                      <div key={image.id} className="relative group">
+                        <img
+                          src={image.thumbnail}
+                          alt={image.title}
+                          className="w-full h-48 object-cover rounded-lg"
+                        />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-opacity flex items-center justify-center opacity-0 group-hover:opacity-100">
+                          <button
+                            onClick={() => handleDeleteImage(image.id)}
+                            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600"
+                          >
+                            <TrashIcon className="h-5 w-5" />
+                          </button>
                         </div>
                       </div>
                     ))}
@@ -587,6 +645,31 @@ const Admin: React.FC = () => {
           }}
           mode={editingNews ? 'edit' : 'add'}
           initialData={editingNews}
+          onSave={handleNewsSave}
+        />
+      )}
+
+      {/* Route Editor Modal */}
+      {showRouteEditor && (
+        <RouteEditor
+          isOpen={showRouteEditor}
+          onClose={() => {
+            setShowRouteEditor(false);
+            setEditingRoute(null);
+          }}
+          mode={editingRoute ? 'edit' : 'add'}
+          initialData={editingRoute}
+          onSave={handleRouteSave}
+        />
+      )}
+
+      {/* Gallery Manager Modal */}
+      {showGalleryManager && (
+        <GalleryManager
+          isOpen={showGalleryManager}
+          onClose={() => setShowGalleryManager(false)}
+          onUpload={handleGalleryUpload}
+          onBulkUpload={handleGalleryBulkUpload}
         />
       )}
     </div>
