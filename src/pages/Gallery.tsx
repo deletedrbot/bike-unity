@@ -9,7 +9,7 @@ const Gallery: React.FC = () => {
   const images = [
     {
       id: 1,
-      src: '/images/gallery/img1.jpg',
+      src: '/images/gallery/gallery-1.jpg',
       alt: 'Велопрогулка по городу',
       category: 'city',
       caption: 'Групповая велопрогулка по центру города',
@@ -17,7 +17,7 @@ const Gallery: React.FC = () => {
     },
     {
       id: 2,
-      src: '/images/gallery/img2.jpg',
+      src: '/images/gallery/gallery-2.jpg',
       alt: 'Горный маршрут',
       category: 'mountain',
       caption: 'Захватывающие виды горных троп',
@@ -25,7 +25,7 @@ const Gallery: React.FC = () => {
     },
     {
       id: 3,
-      src: '/images/gallery/img3.jpg',
+      src: '/images/gallery/gallery-3.jpg',
       alt: 'Велосипедный кемпинг',
       category: 'camping',
       caption: 'Отдых в кемпинге после долгой поездки',
@@ -33,7 +33,7 @@ const Gallery: React.FC = () => {
     },
     {
       id: 4,
-      src: '/images/gallery/img4.jpg',
+      src: '/images/gallery/gallery-4.jpg',
       alt: 'Соревнования',
       category: 'competition',
       caption: 'Участие в велосипедных соревнованиях',
@@ -41,7 +41,7 @@ const Gallery: React.FC = () => {
     },
     {
       id: 5,
-      src: '/images/gallery/img5.jpg',
+      src: '/images/gallery/gallery-5.jpg',
       alt: 'Вечерняя прогулка',
       category: 'city',
       caption: 'Романтичная вечерняя прогулка',
@@ -49,7 +49,7 @@ const Gallery: React.FC = () => {
     },
     {
       id: 6,
-      src: '/images/gallery/img6.jpg',
+      src: '/images/gallery/gallery-6.jpg',
       alt: 'Лесная тропа',
       category: 'forest',
       caption: 'Поездка по живописным лесным тропам',
@@ -57,7 +57,7 @@ const Gallery: React.FC = () => {
     },
     {
       id: 7,
-      src: '/images/gallery/img7.jpg',
+      src: '/images/gallery/gallery-7.jpg',
       alt: 'Пикник на природе',
       category: 'camping',
       caption: 'Приятный отдых на природе',
@@ -65,7 +65,7 @@ const Gallery: React.FC = () => {
     },
     {
       id: 8,
-      src: '/images/gallery/img8.jpg',
+      src: '/images/gallery/gallery-8.jpg',
       alt: 'Групповое фото',
       category: 'group',
       caption: 'Дружная команда велосипедистов',
