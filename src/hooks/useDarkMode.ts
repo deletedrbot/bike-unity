@@ -1,4 +1,4 @@
-import { useGlobal } from '../contexts/GlobalContext';
+import { useGlobal } from '../hooks/useGlobal';
 
 export function useDarkMode() {
   const { isDarkMode, toggleDarkMode } = useGlobal();

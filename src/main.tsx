@@ -14,7 +14,7 @@ root.render(
   <React.StrictMode>
     <ErrorBoundary>
       <GlobalProvider>
-        <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <BrowserRouter basename={import.meta.env.BASE_URL as string}>
           <App />
         </BrowserRouter>
       </GlobalProvider>
