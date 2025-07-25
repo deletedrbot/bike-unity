@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Фон круга -->
+  <circle cx="100" cy="100" r="90" fill="#1E40AF" fill-opacity="0.1"/>
+  
+  <!-- Стилизованный мотоцикл -->
+  <path d="M60 120C60 120 70 110 80 110H120C130 110 140 120 140 120" stroke="#1E40AF" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="70" cy="130" r="15" stroke="#1E40AF" stroke-width="8" fill="none"/>
+  <circle cx="130" cy="130" r="15" stroke="#1E40AF" stroke-width="8" fill="none"/>
+  
+  <!-- Стилизованный водитель -->
+  <circle cx="100" cy="90" r="10" fill="#1E40AF"/>
+  <path d="M100 100V110" stroke="#1E40AF" stroke-width="4" stroke-linecap="round"/>
+  <path d="M90 105H110" stroke="#1E40AF" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Текст "Bike Unity" -->
+  <text x="100" y="160" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="#1E40AF">BIKE UNITY</text>
+</svg> 
