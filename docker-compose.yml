@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  backend:
+    build: ./backend
+    container_name: bike-unity-backend
+    env_file:
+      - ./backend/.env
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+    volumes:
+      - ./backend/users.db:/app/users.db
+  frontend:
+    build: .
+    container_name: bike-unity-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped 

@@ -15,7 +15,7 @@ interface SafetyRule {
   id: number;
   title: string;
   description: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   category: 'equipment' | 'behavior' | 'emergency' | 'preparation';
   priority: 'high' | 'medium' | 'low';
 }
@@ -237,7 +237,7 @@ export default function Safety() {
               {categories.map((category) => (
                 <button
                   key={category.value}
-                  onClick={() => setSelectedCategory(category.value as any)}
+                  onClick={() => setSelectedCategory(category.value as 'all' | 'equipment' | 'behavior' | 'emergency' | 'preparation')}
                   className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
                     selectedCategory === category.value
                       ? 'bg-red-600 text-white shadow-lg' 

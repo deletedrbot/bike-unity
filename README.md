@@ -69,6 +69,22 @@ npm run deploy
 3. Выберите ветку "gh-pages" и папку "/ (root)"
 4. Нажмите "Save"
 
+## Деплой через Docker Compose
+
+1. Убедитесь, что у вас установлен Docker и docker-compose.
+2. Скопируйте `.env` в `backend/.env` и настройте переменные.
+3. Соберите и запустите проект:
+   ```bash
+   docker-compose up --build -d
+   ```
+4. Фронтенд будет доступен на http://localhost/
+5. Бэкенд — на http://localhost:3001/
+
+Для остановки:
+```bash
+docker-compose down
+```
+
 ## Структура проекта
 
 ```
@@ -94,3 +110,22 @@ bike-unity/
 ## Лицензия
 
 MIT 
+
+## Тесты
+- Запуск тестов: `npm test`
+- Тесты лежат в папке `src/__tests__`
+
+## Pre-commit хуки
+- Используется husky + lint-staged для автолинтинга и prettier при коммите.
+
+## ErrorBoundary
+- Глобальный перехват ошибок реализован в `src/components/ErrorBoundary.tsx`.
+
+## Глобальное состояние
+- Пример глобального состояния через Context API: `src/contexts/GlobalContext.tsx`.
+
+## Валидация форм
+- Пример формы с валидацией: `src/components/ValidatedForm.tsx` (react-hook-form + yup).
+
+## PWA
+- Service worker: `src/service-worker.js`. 
